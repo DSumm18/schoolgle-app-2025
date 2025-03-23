@@ -1,8 +1,12 @@
+"use client"
+
 import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "default" | "outline" | "secondary" | "ghost" | "link";
   size?: "default" | "sm" | "lg";
+  asChild?: boolean;
   children: React.ReactNode;
 }
 
@@ -10,6 +14,7 @@ export function Button({
   className = "",
   variant = "default",
   size = "default",
+  asChild = false,
   children,
   ...props
 }: ButtonProps) {
@@ -31,9 +36,11 @@ export function Button({
   
   const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
 
+  const Comp = asChild ? Slot : "button";
+
   return (
-    <button className={classes} {...props}>
+    <Comp className={classes} {...props}>
       {children}
-    </button>
+    </Comp>
   );
 }
