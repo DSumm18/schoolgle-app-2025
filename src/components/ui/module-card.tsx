@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { motion } from "framer-motion"
+import { motion, HTMLMotionProps } from "framer-motion"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { AnimatedButton } from "@/components/ui/animated-button"
 import { LucideIcon } from "lucide-react"
@@ -23,11 +23,14 @@ export function ModuleCard({
   color = "bg-primary/10 text-primary",
   gradient = "from-primary/10 to-primary/5"
 }: ModuleCardProps) {
+  // Define motion props separately to avoid type conflicts
+  const motionProps: HTMLMotionProps<"div"> = {
+    whileHover: { y: -5 },
+    transition: { duration: 0.2 }
+  }
+
   return (
-    <motion.div
-      whileHover={{ y: -5 }}
-      transition={{ duration: 0.2 }}
-    >
+    <motion.div {...motionProps}>
       <Card className="h-full overflow-hidden border hover:shadow-lg transition-shadow">
         <div className={`h-2 w-full bg-gradient-to-r ${gradient}`} />
         <CardHeader className="pb-2">
