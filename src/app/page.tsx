@@ -150,13 +150,16 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto relative z-10">
           <motion.div {...heroContainerProps}>
             <motion.div 
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 flex justify-center lg:justify-start"
+              className="flex justify-center lg:justify-start mb-8"
               variants={itemVariants}
             >
-              <AnimatedLogo size="lg" />
+              {/* Logo with double the size */}
+              <div className="scale-[2.0] origin-left transform-gpu">
+                <AnimatedLogo size="lg" />
+              </div>
             </motion.div>
             <motion.p 
-              className="text-xl sm:text-2xl max-w-xl lg:max-w-2xl mx-auto lg:mx-0 mb-8"
+              className="text-2xl sm:text-3xl max-w-xl lg:max-w-2xl mx-auto lg:mx-0 mb-10 mt-10 font-light"
               variants={itemVariants}
             >
               A modern platform for educational institutions to manage activities, assess risks, and track issues efficiently.
