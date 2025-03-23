@@ -72,18 +72,18 @@ export function RiskAssessmentCard({
           <Badge variant={riskVariant[riskLevel]} className="text-xs">
             Risk Level: {riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1)}
           </Badge>
-          <span className="text-xs text-gray-500 dark:text-gray-400">
+          <span className="text-xs text-muted-foreground">
             ID: {id}
           </span>
         </div>
         
         <div className="text-sm">
           <div className="flex justify-between mb-1">
-            <span className="text-gray-600 dark:text-gray-400">Assessor:</span>
+            <span className="text-muted-foreground">Assessor:</span>
             <span>{assessor}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600 dark:text-gray-400">Last Updated:</span>
+            <span className="text-muted-foreground">Last Updated:</span>
             <span>{formatDate(lastUpdated)}</span>
           </div>
         </div>
