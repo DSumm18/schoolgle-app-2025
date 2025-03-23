@@ -1,45 +1,94 @@
-"use client";
-
-import React from 'react';
+import React, { useState } from 'react';
+import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core';
+import { SortableContext, arrayMove, rectSortingStrategy } from '@dnd-kit/sortable';
 import { DraggableWidget } from './draggable-widget';
-import { Button } from '@/components/ui/button';
 
-// Simple placeholder implementation until dnd-kit is installed
-export function WidgetGrid({ editMode, schoolId }: { 
-  editMode: boolean,
-  widgets?: any[],
-  schoolId?: string,
-  onWidgetsChange?: (widgets: any[]) => void 
-}) {
-  // Mock widgets data
-  const defaultWidgets = [
-    { id: "widget-1", type: 'video', title: 'School Highlights', content: 'https://example.com/school-video.mp4' },
-    { id: "widget-2", type: 'image', title: 'School Gallery', content: '' },
-    { id: "widget-3", type: 'text', title: 'Principal\'s Message', content: 'Welcome to our school! We are committed to providing an excellent education for all students...' },
-    { id: "widget-4", type: 'calendar', title: 'Upcoming Events', content: '' },
-    { id: "widget-5", type: 'social', title: 'Social Media', content: '' },
-    { id: "widget-6", type: 'links', title: 'Quick Links', content: '' },
-  ];
+export type Widget = {
+  id: string;
+  title: string;
+  content: React.ReactNode;
+  width?: 'small' | 'medium' | 'large';
+  height?: 'small' | 'medium' | 'large';
+};
+
+interface WidgetGridProps {
+  widgets: Widget[];
+  onWidgetsChange?: (widgets: Widget[]) => void;
+  editable?: boolean;
+}
+
+export function WidgetGrid({ widgets, onWidgetsChange, editable = false }: WidgetGridProps) {
+  const [items, setItems] = useState<Widget[]>(widgets);
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    
+    if (!over) return;
+    if (active.id !== over.id) {
+      setItems((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        
+        const newItems = arrayMove(items, oldIndex, newIndex);
+        
+        if (onWidgetsChange) {
+          onWidgetsChange(newItems);
+        }
+        
+        return newItems;
+      });
+    }
+  }
+
+  const widthClass = (width?: 'small' | 'medium' | 'large') => {
+    switch (width) {
+      case 'small':
+        return 'col-span-1';
+      case 'medium':
+        return 'col-span-2';
+      case 'large':
+        return 'col-span-3';
+      default:
+        return 'col-span-1';
+    }
+  };
+
+  const heightClass = (height?: 'small' | 'medium' | 'large') => {
+    switch (height) {
+      case 'small':
+        return 'row-span-1';
+      case 'medium':
+        return 'row-span-2';
+      case 'large':
+        return 'row-span-3';
+      default:
+        return 'row-span-1';
+    }
+  };
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {defaultWidgets.map((widget) => (
-          <DraggableWidget 
-            key={widget.id}
-            widget={widget}
-            editMode={editMode}
-          />
-        ))}
+    <DndContext
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="grid grid-cols-3 gap-4 auto-rows-min">
+        <SortableContext items={items.map(item => item.id)} strategy={rectSortingStrategy}>
+          {items.map((widget) => (
+            <div 
+              key={widget.id}
+              className={`${widthClass(widget.width)} ${heightClass(widget.height)}`}
+            >
+              <DraggableWidget
+                id={widget.id}
+                title={widget.title}
+                editable={editable}
+              >
+                {widget.content}
+              </DraggableWidget>
+            </div>
+          ))}
+        </SortableContext>
       </div>
-      
-      {editMode && (
-        <div className="flex justify-center mt-6">
-          <Button variant="outline" className="w-full max-w-xs mx-auto">
-            Add New Widget
-          </Button>
-        </div>
-      )}
-    </div>
+    </DndContext>
   );
 }
