@@ -4,136 +4,152 @@ import { ModuleCard } from "@/components/ui/module-card";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { motion } from "framer-motion";
 import { 
-  Calendar, 
-  ShieldAlert, 
-  FileWarning, 
-  FileText, 
-  Users, 
-  Bike, 
   Building, 
-  BookOpen
+  Users, 
+  CircleDollarSign, 
+  HeartPulse, 
+  Book, 
+  Briefcase, 
+  MessageCircle, 
+  ShoppingCart,
+  Home
 } from "lucide-react";
 
 const modules = [
   {
-    id: "activity-management",
-    title: "Activity Management",
-    description: "Manage activities in educational institutions efficiently",
+    id: "my-school-intranet",
+    title: "My School Intranet",
+    description: "Centralized digital platform for school communication and resources",
     features: [
-      "Create and manage activities",
-      "Schedule recurring activities",
-      "Track participant attendance",
-      "Generate activity reports",
-      "Risk assessment integration"
+      "Staff and student portals",
+      "Document sharing",
+      "News and announcements",
+      "Calendar integration",
+      "Personalized dashboards"
     ],
     color: "bg-blue-100 text-blue-500 dark:bg-blue-900/30 dark:text-blue-300",
     gradient: "from-blue-100 to-blue-50 dark:from-blue-900/30 dark:to-blue-900/10",
-    icon: Calendar
+    icon: Home
   },
   {
-    id: "risk-assessment",
-    title: "Risk Assessment",
-    description: "Identify and mitigate risks in educational environments",
+    id: "estate-management",
+    title: "Estate Management",
+    description: "Comprehensive management of school facilities and properties",
     features: [
-      "Comprehensive risk evaluation forms",
-      "Risk level identification",
-      "Mitigation strategy recommendations",
-      "Compliance with safety regulations",
-      "Historical assessment tracking"
+      "Building maintenance tracking",
+      "Space allocation",
+      "Asset management",
+      "Health & safety compliance",
+      "Work order processing"
     ],
     color: "bg-amber-100 text-amber-500 dark:bg-amber-900/30 dark:text-amber-300",
     gradient: "from-amber-100 to-amber-50 dark:from-amber-900/30 dark:to-amber-900/10",
-    icon: ShieldAlert
-  },
-  {
-    id: "issue-tracker",
-    title: "Issue Tracker",
-    description: "Log, track, and resolve issues efficiently",
-    features: [
-      "Issue categorization system",
-      "Priority-based triage",
-      "Assignment workflow",
-      "Resolution tracking",
-      "Reporting and analytics"
-    ],
-    color: "bg-red-100 text-red-500 dark:bg-red-900/30 dark:text-red-300",
-    gradient: "from-red-100 to-red-50 dark:from-red-900/30 dark:to-red-900/10",
-    icon: FileWarning
-  },
-  {
-    id: "document-management",
-    title: "Document Management",
-    description: "Organize and manage educational documents and resources",
-    features: [
-      "Document organization by category",
-      "Version control system",
-      "Searchable document database",
-      "Access control settings",
-      "Integration with other modules"
-    ],
-    color: "bg-purple-100 text-purple-500 dark:bg-purple-900/30 dark:text-purple-300",
-    gradient: "from-purple-100 to-purple-50 dark:from-purple-900/30 dark:to-purple-900/10",
-    icon: FileText
-  },
-  {
-    id: "staff-management",
-    title: "Staff Management",
-    description: "Efficiently manage staff records, schedules, and performance",
-    features: [
-      "Staff profiles and documentation",
-      "Performance evaluations",
-      "Professional development tracking",
-      "Certification management",
-      "Substitute teacher coordination"
-    ],
-    color: "bg-green-100 text-green-500 dark:bg-green-900/30 dark:text-green-300",
-    gradient: "from-green-100 to-green-50 dark:from-green-900/30 dark:to-green-900/10",
-    icon: Users
-  },
-  {
-    id: "estates",
-    title: "Estates & Facilities",
-    description: "Manage the physical assets and infrastructure of your school",
-    features: [
-      "Maintenance scheduling",
-      "Asset inventory management",
-      "Facility booking system",
-      "Resource allocation",
-      "Space utilization analytics"
-    ],
-    color: "bg-indigo-100 text-indigo-500 dark:bg-indigo-900/30 dark:text-indigo-300",
-    gradient: "from-indigo-100 to-indigo-50 dark:from-indigo-900/30 dark:to-indigo-900/10",
     icon: Building
   },
   {
-    id: "extracurricular",
-    title: "Extracurricular Activities",
-    description: "Organize and manage after-school programs and activities",
+    id: "people-wellbeing",
+    title: "People & Wellbeing",
+    description: "Supporting staff and student welfare and development",
     features: [
-      "Club and activity management",
-      "Event scheduling",
-      "Student participation tracking",
-      "Parent permission slips",
-      "Equipment inventory"
+      "Staff wellbeing programs",
+      "Professional development",
+      "Mental health resources",
+      "Absence management",
+      "Performance reviews"
+    ],
+    color: "bg-green-100 text-green-500 dark:bg-green-900/30 dark:text-green-300",
+    gradient: "from-green-100 to-green-50 dark:from-green-900/30 dark:to-green-900/10",
+    icon: HeartPulse
+  },
+  {
+    id: "finance",
+    title: "Finance",
+    description: "Streamlined financial management for educational institutions",
+    features: [
+      "Budget planning and tracking",
+      "Expense management",
+      "Funding allocation",
+      "Financial reporting",
+      "Audit preparation"
+    ],
+    color: "bg-emerald-100 text-emerald-500 dark:bg-emerald-900/30 dark:text-emerald-300",
+    gradient: "from-emerald-100 to-emerald-50 dark:from-emerald-900/30 dark:to-emerald-900/10",
+    icon: CircleDollarSign
+  },
+  {
+    id: "send",
+    title: "SEND",
+    description: "Special Educational Needs and Disabilities support system",
+    features: [
+      "Individual education plans",
+      "Progress monitoring",
+      "Resource allocation",
+      "Parent communication",
+      "Regulatory compliance"
+    ],
+    color: "bg-purple-100 text-purple-500 dark:bg-purple-900/30 dark:text-purple-300",
+    gradient: "from-purple-100 to-purple-50 dark:from-purple-900/30 dark:to-purple-900/10",
+    icon: Users
+  },
+  {
+    id: "teaching-learning",
+    title: "Teaching & Learning",
+    description: "Tools to enhance educational delivery and assessment",
+    features: [
+      "Curriculum management",
+      "Lesson planning",
+      "Assessment tracking",
+      "Resource sharing",
+      "Student progress monitoring"
+    ],
+    color: "bg-indigo-100 text-indigo-500 dark:bg-indigo-900/30 dark:text-indigo-300",
+    gradient: "from-indigo-100 to-indigo-50 dark:from-indigo-900/30 dark:to-indigo-900/10",
+    icon: Book
+  },
+  {
+    id: "school-business-management",
+    title: "School Business Management",
+    description: "Operational management tools for efficient school administration",
+    features: [
+      "Policy management",
+      "Compliance tracking",
+      "Risk assessment",
+      "Resource planning",
+      "Strategic development"
     ],
     color: "bg-orange-100 text-orange-500 dark:bg-orange-900/30 dark:text-orange-300",
     gradient: "from-orange-100 to-orange-50 dark:from-orange-900/30 dark:to-orange-900/10",
-    icon: Bike
+    icon: Briefcase
   },
   {
-    id: "curriculum",
-    title: "Curriculum Management",
-    description: "Streamline curriculum planning, delivery, and assessment",
+    id: "lets-talk-education",
+    title: "Let's Talk Education",
+    description: "Communication platform for educational discussions and collaboration",
     features: [
-      "Curriculum mapping",
-      "Lesson planning templates",
-      "Standards alignment",
-      "Resource sharing",
-      "Assessment creation"
+      "Discussion forums",
+      "Best practice sharing",
+      "Professional networking",
+      "Expert webinars",
+      "Community building"
     ],
     color: "bg-cyan-100 text-cyan-500 dark:bg-cyan-900/30 dark:text-cyan-300",
     gradient: "from-cyan-100 to-cyan-50 dark:from-cyan-900/30 dark:to-cyan-900/10",
-    icon: BookOpen
+    icon: MessageCircle
+  },
+  {
+    id: "procurement",
+    title: "Procurement",
+    description: "Streamlined purchasing system for educational supplies and services",
+    features: [
+      "Supplier management",
+      "Purchase order processing",
+      "Contract management",
+      "Inventory tracking",
+      "Cost-saving analysis"
+    ],
+    color: "bg-rose-100 text-rose-500 dark:bg-rose-900/30 dark:text-rose-300",
+    gradient: "from-rose-100 to-rose-50 dark:from-rose-900/30 dark:to-rose-900/10",
+    icon: ShoppingCart
   }
 ];
 
@@ -162,8 +178,14 @@ const itemVariants = {
 
 export default function ModulesPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background relative">
+      {/* Subtle background shading for light mode */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-50 opacity-70 dark:opacity-0 pointer-events-none" />
+      
+      {/* Subtle background shading for dark mode */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 opacity-0 dark:opacity-30 pointer-events-none" />
+      
+      <div className="container max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div 
           className="text-center mb-12"
           initial="hidden"
@@ -190,7 +212,7 @@ export default function ModulesPage() {
         </motion.div>
 
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
