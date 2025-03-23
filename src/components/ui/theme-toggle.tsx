@@ -1,25 +1,34 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
-
-import { Button } from "@/components/ui/button"
+import * as React from "react";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 
 export function ThemeToggle() {
-  const { setTheme, theme } = useTheme()
+  const { setTheme, theme } = useTheme();
 
   return (
     <Button
       variant="ghost"
-      size="sm"
+      size="icon"
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-      className="w-9 px-0"
-      aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
+      className="relative w-9 h-9 rounded-full"
     >
-      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      <motion.div
+        className="absolute inset-0 flex items-center justify-center"
+        initial={false}
+        animate={theme === "dark" ? { rotate: 360 } : { rotate: 0 }}
+        transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
+      >
+        {theme === "light" ? (
+          <Sun className="h-5 w-5 text-orange-400" />
+        ) : (
+          <Moon className="h-5 w-5 text-blue-300" />
+        )}
+      </motion.div>
       <span className="sr-only">Toggle theme</span>
     </Button>
-  )
+  );
 }
