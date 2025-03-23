@@ -40,6 +40,24 @@ import {
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 
+// Type definitions
+interface Assessment {
+  id: number;
+  name: string;
+  subject: string;
+  year: string;
+  date: string;
+  status: string;
+  averageScore: number | null;
+  submissions: number;
+  totalStudents: number;
+  type: string;
+}
+
+interface StatusCountsType {
+  [key: string]: number;
+}
+
 // Sample data
 const mockAssessments = [
   {
@@ -141,7 +159,7 @@ const mockAssessments = [
 ];
 
 // Color mapping for status badges
-const statusColors = {
+const statusColors: {[key: string]: string} = {
   "Completed": "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
   "In Progress": "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
   "Marking": "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
@@ -150,14 +168,14 @@ const statusColors = {
 };
 
 // Color mapping for assessment types
-const typeColors = {
+const typeColors: {[key: string]: string} = {
   "Summative": "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400",
   "Formative": "bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-400",
   "Diagnostic": "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
 };
 
 export default function AssessmentTrackerPage() {
-  const [assessments, setAssessments] = useState(mockAssessments);
+  const [assessments, setAssessments] = useState<Assessment[]>(mockAssessments);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState("date");
   const [sortDirection, setSortDirection] = useState("desc");
@@ -217,7 +235,7 @@ export default function AssessmentTrackerPage() {
   const submissionRate = assessments.reduce((acc, curr) => acc + curr.submissions, 0) / 
     assessments.reduce((acc, curr) => acc + curr.totalStudents, 0) * 100;
   
-  const statusCounts = assessments.reduce((acc, curr) => {
+  const statusCounts = assessments.reduce<StatusCountsType>((acc, curr) => {
     acc[curr.status] = (acc[curr.status] || 0) + 1;
     return acc;
   }, {});
