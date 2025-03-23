@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { format } from "date-fns"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -8,15 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 export function formatDate(date: Date | string, formatString: string = "PPP") {
   // Convert string to Date if needed
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  
-  // Format date using native JavaScript
-  const options = { 
-    month: 'long', 
-    day: 'numeric', 
-    year: 'numeric' 
-  };
-  
-  return dateObj.toLocaleDateString('en-US', options);
+  return format(dateObj, formatString)
 }
 
 export function getGreeting() {
