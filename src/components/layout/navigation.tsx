@@ -41,13 +41,26 @@ export function Navigation() {
               >
                 About
               </Link>
+              <Link 
+                href="/contact" 
+                className="border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+              >
+                Contact
+              </Link>
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-2">
             <ThemeToggle />
-            <Button variant="outline" size="sm">
-              Sign In
-            </Button>
+            <Link href="/dashboard">
+              <Button variant="outline" size="sm" className="mr-2">
+                Dashboard
+              </Button>
+            </Link>
+            <Link href="/auth/login">
+              <Button size="sm">
+                Sign In
+              </Button>
+            </Link>
           </div>
           <div className="-mr-2 flex items-center sm:hidden">
             <ThemeToggle />
@@ -113,8 +126,22 @@ export function Navigation() {
           >
             About
           </Link>
+          <Link
+            href="/contact"
+            className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-800"
+          >
+            Contact
+          </Link>
+          <Link
+            href="/dashboard"
+            className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-800"
+          >
+            Dashboard
+          </Link>
           <div className="mt-4 px-3">
-            <Button className="w-full">Sign In</Button>
+            <Link href="/auth/login">
+              <Button className="w-full">Sign In</Button>
+            </Link>
           </div>
         </div>
       </div>
