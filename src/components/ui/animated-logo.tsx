@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react'
-import { motion } from 'framer-motion'
+import { motion, HTMLMotionProps, Variant } from 'framer-motion'
 import Link from 'next/link'
 
 interface AnimatedLogoProps {
@@ -49,11 +49,12 @@ export function AnimatedLogo({
     }
   }
 
+  // Properly type the custom variant
   const letterVariants = {
     hidden: { 
       y: 20, 
       opacity: 0 
-    },
+    } as Variant,
     visible: { 
       y: 0, 
       opacity: 1,
@@ -62,7 +63,7 @@ export function AnimatedLogo({
         stiffness: 200,
         damping: 10
       }
-    },
+    } as Variant,
     hover: (i: number) => ({
       y: [0, -10, 0],
       transition: {
@@ -70,17 +71,22 @@ export function AnimatedLogo({
         delay: i * 0.05,
         repeat: 0
       }
-    })
+    }) as Variant
+  }
+
+  // Define motion props separately
+  const containerMotionProps: HTMLMotionProps<"div"> = {
+    variants: containerVariants,
+    initial: "hidden",
+    animate: "visible",
+    whileHover: "hover"
   }
 
   return (
     <Link href="/" className={className}>
       <motion.div 
         className={`flex items-center ${sizeClasses[size]}`}
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        whileHover="hover"
+        {...containerMotionProps}
       >
         {'Schoolgle'.split('').map((letter, i) => (
           <motion.span 
