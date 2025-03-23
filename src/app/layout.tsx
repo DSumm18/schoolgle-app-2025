@@ -26,7 +26,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="relative flex min-h-screen flex-col bg-background text-foreground">
+          <div className="relative flex min-h-screen flex-col bg-background text-foreground bg-texture-light dark:bg-texture-dark">
             <Navigation />
             <main className="flex-1 relative overflow-hidden">
               <PageTransition>
