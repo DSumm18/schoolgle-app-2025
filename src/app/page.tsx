@@ -1,16 +1,15 @@
-"use client"
+"use client";
 
-import { Button } from '@/components/ui/button';
+import React from "react";
+import { motion, HTMLMotionProps, Variants } from "framer-motion";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import Header from "@/components/header";
+import { AnimatedLogo } from "@/components/animated-logo";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import Link from 'next/link';
-import { formatDate } from '@/lib/utils';
-import { motion, HTMLMotionProps, Variants } from 'framer-motion';
 import { CheckCircle2, Book, Calendar, AlertCircle, ArrowRight } from 'lucide-react';
-import { AnimatedLogo } from '@/components/ui/animated-logo';
 
 export default function HomePage() {
-  const currentDate = formatDate(new Date().toISOString());
-  
   // Animation variants
   const containerVariants: Variants = {
     hidden: {},
@@ -52,7 +51,6 @@ export default function HomePage() {
     }
   };
 
-  // Background motion props
   const bgCircle1Props: HTMLMotionProps<"div"> = {
     className: "absolute top-10 left-10 w-20 h-20 rounded-full bg-blue-300",
     animate: { 
@@ -92,7 +90,6 @@ export default function HomePage() {
     }
   };
   
-  // Hero section motion props
   const heroContainerProps: HTMLMotionProps<"div"> = {
     className: "text-center lg:text-left",
     initial: "hidden",
@@ -100,7 +97,6 @@ export default function HomePage() {
     variants: containerVariants
   };
 
-  // Features section motion props
   const featuresSectionProps: HTMLMotionProps<"div"> = {
     className: "text-center mb-12",
     initial: "hidden",
@@ -117,7 +113,6 @@ export default function HomePage() {
     variants: containerVariants
   };
 
-  // Testimonials section motion props
   const testimonialsSectionProps: HTMLMotionProps<"div"> = {
     className: "text-center mb-12",
     initial: "hidden",
@@ -134,7 +129,6 @@ export default function HomePage() {
     variants: containerVariants
   };
 
-  // CTA section motion props
   const ctaSectionProps: HTMLMotionProps<"div"> = {
     className: "max-w-6xl mx-auto text-center",
     initial: "hidden",
@@ -144,238 +138,113 @@ export default function HomePage() {
   };
   
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 text-white overflow-hidden">
-        <div className="max-w-6xl mx-auto relative z-10">
-          <motion.div {...heroContainerProps}>
-            <motion.div 
-              className="flex justify-center lg:justify-start mb-8"
-              variants={itemVariants}
+    <div className="min-h-screen flex flex-col bg-background">
+      <Header />
+      
+      <main className="flex-grow flex flex-col items-center justify-center p-6 md:p-24">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="max-w-3xl mx-auto text-center"
+        >
+          <div className="flex justify-center mb-6">
+            <AnimatedLogo width={80} height={80} />
+          </div>
+          
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            Welcome to Schoolgle
+          </h1>
+          
+          <p className="text-xl text-muted-foreground mb-8">
+            Your complete school management solution
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="flex flex-col items-center bg-card rounded-lg p-6 shadow-sm"
             >
-              {/* Logo with triple the size */}
-              <div className="scale-[3.0] origin-left transform-gpu mb-6">
-                <AnimatedLogo size="lg" />
+              <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="24" 
+                  height="24" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                  className="text-blue-500"
+                >
+                  <rect width="7" height="9" x="3" y="3" rx="1" />
+                  <rect width="7" height="5" x="14" y="3" rx="1" />
+                  <rect width="7" height="9" x="14" y="12" rx="1" />
+                  <rect width="7" height="5" x="3" y="16" rx="1" />
+                </svg>
               </div>
-            </motion.div>
-            <motion.p 
-              className="text-2xl sm:text-3xl lg:text-4xl max-w-xl lg:max-w-2xl mx-auto lg:mx-0 mb-10 mt-16 font-light"
-              variants={itemVariants}
-            >
-              A modern platform for educational institutions to manage activities, assess risks, and track issues efficiently.
-            </motion.p>
-            <motion.div 
-              className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4"
-              variants={itemVariants}
-            >
-              <Link href="/modules">
-                <Button size="lg" className="w-full sm:w-auto bg-white text-blue-700 hover:bg-gray-100">
-                  Explore Modules
-                </Button>
-              </Link>
-              <Link href="/about">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white/10">
-                  Learn More
+              <h2 className="text-xl font-semibold mb-2">Dashboard</h2>
+              <p className="text-muted-foreground text-center mb-4">
+                Access your school management dashboard with all available modules.
+              </p>
+              <Link href="/dashboard" className="mt-auto">
+                <Button size="lg" className="w-full">
+                  Go to Dashboard
                 </Button>
               </Link>
             </motion.div>
-          </motion.div>
-        </div>
-        
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden opacity-20">
-          <motion.div {...bgCircle1Props} />
-          <motion.div {...bgCircle2Props} />
-          <motion.div {...bgCircle3Props} />
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-background relative">
-        {/* Subtle background shading for light mode */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-50 opacity-70 dark:opacity-0 pointer-events-none" />
-        
-        {/* Subtle background shading for dark mode */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 opacity-0 dark:opacity-30 pointer-events-none" />
-        
-        <div className="max-w-6xl mx-auto relative z-10">
-          <motion.div {...featuresSectionProps}>
-            <h2 className="text-3xl font-bold mb-4">Key Features</h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Designed to streamline operations and improve efficiency in educational institutions.
-            </p>
-          </motion.div>
-          
-          <motion.div {...featuresGridProps}>
-            <motion.div variants={scaleInVariants}>
-              <Card className="flex flex-col h-full hover:shadow-lg transition-all duration-300">
-                <CardHeader className="pb-2">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <Calendar className="w-6 h-6 text-primary" />
-                  </div>
-                  <CardTitle>Activity Management</CardTitle>
-                  <CardDescription>Streamline school activities and events</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <p>
-                    Efficiently plan, track, and manage school activities with calendar integration, reminders, and assignment features.
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <Link href="/modules/activity-management" className="text-primary hover:underline flex items-center">
-                    Learn more <ArrowRight className="w-4 h-4 ml-1" />
-                  </Link>
-                </CardFooter>
-              </Card>
-            </motion.div>
             
-            <motion.div variants={scaleInVariants}>
-              <Card className="flex flex-col h-full hover:shadow-lg transition-all duration-300">
-                <CardHeader className="pb-2">
-                  <div className="w-12 h-12 rounded-full bg-yellow-500/10 flex items-center justify-center mb-4">
-                    <AlertCircle className="w-6 h-6 text-yellow-500" />
-                  </div>
-                  <CardTitle>Risk Assessment</CardTitle>
-                  <CardDescription>Identify and mitigate potential risks</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <p>
-                    Comprehensive risk assessment tools to identify, evaluate, and manage potential hazards across all school environments.
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <Link href="/modules/risk-assessment" className="text-primary hover:underline flex items-center">
-                    Learn more <ArrowRight className="w-4 h-4 ml-1" />
-                  </Link>
-                </CardFooter>
-              </Card>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="flex flex-col items-center bg-card rounded-lg p-6 shadow-sm"
+            >
+              <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-4">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="24" 
+                  height="24" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                  className="text-green-500"
+                >
+                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-semibold mb-2">Public Site</h2>
+              <p className="text-muted-foreground text-center mb-4">
+                Visit our public site to learn more about Schoolgle features and services.
+              </p>
+              <Link href="/marketing" className="mt-auto">
+                <Button size="lg" variant="outline" className="w-full">
+                  Visit Public Site
+                </Button>
+              </Link>
             </motion.div>
-            
-            <motion.div variants={scaleInVariants}>
-              <Card className="flex flex-col h-full hover:shadow-lg transition-all duration-300">
-                <CardHeader className="pb-2">
-                  <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
-                    <Book className="w-6 h-6 text-red-500" />
-                  </div>
-                  <CardTitle>Issue Tracker</CardTitle>
-                  <CardDescription>Monitor and resolve problems efficiently</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <p>
-                    Track, prioritize, and resolve issues with a user-friendly system designed for rapid response and collaborative solutions.
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <Link href="/modules/issue-tracker" className="text-primary hover:underline flex items-center">
-                    Learn more <ArrowRight className="w-4 h-4 ml-1" />
-                  </Link>
-                </CardFooter>
-              </Card>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-muted/30 relative">
-        {/* Subtle background shading for light mode */}
-        <div className="absolute inset-0 bg-gradient-to-tl from-slate-100 via-slate-50 to-slate-100 opacity-70 dark:opacity-0 pointer-events-none" />
-        
-        {/* Subtle background shading for dark mode */}
-        <div className="absolute inset-0 bg-gradient-to-tl from-slate-900 via-slate-800 to-slate-900 opacity-0 dark:opacity-30 pointer-events-none" />
-        
-        <div className="max-w-6xl mx-auto relative z-10">
-          <motion.div {...testimonialsSectionProps}>
-            <h2 className="text-3xl font-bold mb-4">What Our Users Say</h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Hear from educational institutions that have transformed their operations with Schoolgle.
-            </p>
-          </motion.div>
-          
-          <motion.div {...testimonialsGridProps}>
-            {[
-              {
-                quote: "Schoolgle has revolutionized how we manage activities and assess risks at our school. It's intuitive and streamlines our processes.",
-                name: "Jane Smith",
-                title: "Principal, Lincoln Academy",
-                image: "https://randomuser.me/api/portraits/women/4.jpg"
-              },
-              {
-                quote: "The issue tracking module has helped us resolve problems faster than ever. Our staff loves how easy it is to report and track issues.",
-                name: "Michael Johnson",
-                title: "IT Director, Westfield High School",
-                image: "https://randomuser.me/api/portraits/men/5.jpg"
-              }
-            ].map((testimonial, index) => (
-              <motion.div key={index} variants={itemVariants}>
-                <Card className="bg-muted border-none shadow-sm h-full">
-                  <CardContent className="pt-6">
-                    <div className="flex flex-col">
-                      <div className="flex items-center mb-4">
-                        <div className="w-12 h-12 rounded-full overflow-hidden mr-4 border-2 border-primary">
-                          <img 
-                            src={testimonial.image} 
-                            alt={testimonial.name} 
-                            className="w-full h-full object-cover" 
-                          />
-                        </div>
-                        <div>
-                          <p className="font-semibold">{testimonial.name}</p>
-                          <p className="text-sm text-muted-foreground">{testimonial.title}</p>
-                        </div>
-                      </div>
-                      <blockquote className="text-foreground italic">
-                        "{testimonial.quote}"
-                      </blockquote>
-                      <div className="flex mt-4">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <span key={star} className="text-yellow-500">★</span>
-                        ))}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
-        <motion.div {...ctaSectionProps}>
-          <motion.h2 
-            className="text-3xl font-bold mb-4"
-            variants={itemVariants}
-          >
-            Ready to Transform Your School's Operations?
-          </motion.h2>
-          <motion.p 
-            className="text-xl max-w-3xl mx-auto mb-8"
-            variants={itemVariants}
-          >
-            Join hundreds of educational institutions using Schoolgle to streamline their operations.
-          </motion.p>
-          <motion.div variants={itemVariants}>
-            <Button size="lg" variant="secondary" className="group">
-              Get Started Today
-              <motion.span 
-                className="inline-block ml-2"
-                animate={{ x: [0, 4, 0] }}
-                transition={{ repeat: Infinity, duration: 1, repeatType: "loop" }}
-              >
-                →
-              </motion.span>
-            </Button>
-          </motion.div>
-          <motion.p 
-            className="mt-4 text-sm opacity-90"
-            variants={itemVariants}
-          >
-            Current date: {currentDate}
-          </motion.p>
+          </div>
         </motion.div>
-      </section>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="mt-16 max-w-lg mx-auto text-center"
+        >
+          <p className="text-sm text-muted-foreground">
+            Schoolgle 2024 - Version 0.1.0
+            <br />
+            A comprehensive school management system
+          </p>
+        </motion.div>
+      </main>
     </div>
   );
 }
