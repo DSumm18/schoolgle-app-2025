@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { formatDate } from '@/lib/utils';
 import { motion, HTMLMotionProps, Variants } from 'framer-motion';
 import { CheckCircle2, Book, Calendar, AlertCircle, ArrowRight } from 'lucide-react';
+import { AnimatedLogo } from '@/components/ui/animated-logo';
 
 export default function HomePage() {
   const currentDate = formatDate(new Date().toISOString());
@@ -148,12 +149,12 @@ export default function HomePage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 text-white overflow-hidden">
         <div className="max-w-6xl mx-auto relative z-10">
           <motion.div {...heroContainerProps}>
-            <motion.h1 
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
+            <motion.div 
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 flex justify-center lg:justify-start"
               variants={itemVariants}
             >
-              Schoolgle 2025
-            </motion.h1>
+              <AnimatedLogo size="lg" />
+            </motion.div>
             <motion.p 
               className="text-xl sm:text-2xl max-w-xl lg:max-w-2xl mx-auto lg:mx-0 mb-8"
               variants={itemVariants}
