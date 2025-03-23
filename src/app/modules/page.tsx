@@ -1,9 +1,18 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import Link from "next/link";
-import Header from "@/components/header";
+import { ModuleCard } from "@/components/ui/module-card";
+import { AnimatedButton } from "@/components/ui/animated-button";
+import { motion } from "framer-motion";
+import { 
+  Calendar, 
+  ShieldAlert, 
+  FileWarning, 
+  FileText, 
+  Users, 
+  Bike, 
+  Building, 
+  BookOpen
+} from "lucide-react";
 
 const modules = [
   {
@@ -17,9 +26,9 @@ const modules = [
       "Generate activity reports",
       "Risk assessment integration"
     ],
-    ctaText: "Explore Activity Management",
-    bgColor: "bg-blue-50 dark:bg-blue-900/20",
-    iconColor: "text-blue-500"
+    color: "bg-blue-100 text-blue-500 dark:bg-blue-900/30 dark:text-blue-300",
+    gradient: "from-blue-100 to-blue-50 dark:from-blue-900/30 dark:to-blue-900/10",
+    icon: Calendar
   },
   {
     id: "risk-assessment",
@@ -32,9 +41,9 @@ const modules = [
       "Compliance with safety regulations",
       "Historical assessment tracking"
     ],
-    ctaText: "Explore Risk Assessment",
-    bgColor: "bg-amber-50 dark:bg-amber-900/20",
-    iconColor: "text-amber-500"
+    color: "bg-amber-100 text-amber-500 dark:bg-amber-900/30 dark:text-amber-300",
+    gradient: "from-amber-100 to-amber-50 dark:from-amber-900/30 dark:to-amber-900/10",
+    icon: ShieldAlert
   },
   {
     id: "issue-tracker",
@@ -47,9 +56,9 @@ const modules = [
       "Resolution tracking",
       "Reporting and analytics"
     ],
-    ctaText: "Explore Issue Tracker",
-    bgColor: "bg-green-50 dark:bg-green-900/20",
-    iconColor: "text-green-500"
+    color: "bg-red-100 text-red-500 dark:bg-red-900/30 dark:text-red-300",
+    gradient: "from-red-100 to-red-50 dark:from-red-900/30 dark:to-red-900/10",
+    icon: FileWarning
   },
   {
     id: "document-management",
@@ -62,72 +71,160 @@ const modules = [
       "Access control settings",
       "Integration with other modules"
     ],
-    ctaText: "Explore Document Management",
-    bgColor: "bg-purple-50 dark:bg-purple-900/20",
-    iconColor: "text-purple-500"
+    color: "bg-purple-100 text-purple-500 dark:bg-purple-900/30 dark:text-purple-300",
+    gradient: "from-purple-100 to-purple-50 dark:from-purple-900/30 dark:to-purple-900/10",
+    icon: FileText
+  },
+  {
+    id: "staff-management",
+    title: "Staff Management",
+    description: "Efficiently manage staff records, schedules, and performance",
+    features: [
+      "Staff profiles and documentation",
+      "Performance evaluations",
+      "Professional development tracking",
+      "Certification management",
+      "Substitute teacher coordination"
+    ],
+    color: "bg-green-100 text-green-500 dark:bg-green-900/30 dark:text-green-300",
+    gradient: "from-green-100 to-green-50 dark:from-green-900/30 dark:to-green-900/10",
+    icon: Users
+  },
+  {
+    id: "estates",
+    title: "Estates & Facilities",
+    description: "Manage the physical assets and infrastructure of your school",
+    features: [
+      "Maintenance scheduling",
+      "Asset inventory management",
+      "Facility booking system",
+      "Resource allocation",
+      "Space utilization analytics"
+    ],
+    color: "bg-indigo-100 text-indigo-500 dark:bg-indigo-900/30 dark:text-indigo-300",
+    gradient: "from-indigo-100 to-indigo-50 dark:from-indigo-900/30 dark:to-indigo-900/10",
+    icon: Building
+  },
+  {
+    id: "extracurricular",
+    title: "Extracurricular Activities",
+    description: "Organize and manage after-school programs and activities",
+    features: [
+      "Club and activity management",
+      "Event scheduling",
+      "Student participation tracking",
+      "Parent permission slips",
+      "Equipment inventory"
+    ],
+    color: "bg-orange-100 text-orange-500 dark:bg-orange-900/30 dark:text-orange-300",
+    gradient: "from-orange-100 to-orange-50 dark:from-orange-900/30 dark:to-orange-900/10",
+    icon: Bike
+  },
+  {
+    id: "curriculum",
+    title: "Curriculum Management",
+    description: "Streamline curriculum planning, delivery, and assessment",
+    features: [
+      "Curriculum mapping",
+      "Lesson planning templates",
+      "Standards alignment",
+      "Resource sharing",
+      "Assessment creation"
+    ],
+    color: "bg-cyan-100 text-cyan-500 dark:bg-cyan-900/30 dark:text-cyan-300",
+    gradient: "from-cyan-100 to-cyan-50 dark:from-cyan-900/30 dark:to-cyan-900/10",
+    icon: BookOpen
   }
 ];
+
+// Animation variants
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 260,
+      damping: 20
+    }
+  }
+};
 
 export default function ModulesPage() {
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-      
       <div className="container max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Schoolgle Modules</h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+        <motion.div 
+          className="text-center mb-12"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
+          <motion.div variants={itemVariants} className="inline-block mb-6">
+            <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-1 rounded-full">
+              <div className="bg-gradient-to-r from-primary to-primary-foreground bg-background h-1 w-16 rounded-full"></div>
+            </div>
+          </motion.div>
+          <motion.h1 
+            className="text-4xl font-bold mb-4"
+            variants={itemVariants}
+          >
+            Schoolgle Modules
+          </motion.h1>
+          <motion.p 
+            className="text-xl text-muted-foreground max-w-3xl mx-auto"
+            variants={itemVariants}
+          >
             Our specialized modules are designed to address the unique challenges faced by educational institutions.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {modules.map((module) => (
-            <Card key={module.id} className={`border ${module.bgColor} hover:shadow-lg transition-shadow`}>
-              <CardHeader>
-                <div className={`w-10 h-10 rounded-full ${module.iconColor} flex items-center justify-center mb-4`}>
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor" 
-                    className="w-6 h-6"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" 
-                    />
-                  </svg>
-                </div>
-                <CardTitle>{module.title}</CardTitle>
-                <CardDescription>{module.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc pl-5 space-y-2">
-                  {module.features.map((feature, idx) => (
-                    <li key={idx}>{feature}</li>
-                  ))}
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Button className="w-full" asChild>
-                  <Link href={`/modules/${module.id}`}>{module.ctaText}</Link>
-                </Button>
-              </CardFooter>
-            </Card>
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
+          {modules.map((module, index) => (
+            <motion.div key={module.id} variants={itemVariants}>
+              <ModuleCard
+                title={module.title}
+                description={module.description}
+                href={`/modules/${module.id}`}
+                icon={module.icon}
+                color={module.color}
+                gradient={module.gradient}
+              />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
         
-        <div className="mt-16 text-center">
+        <motion.div 
+          className="mt-16 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+        >
+          <div className="mx-auto w-20 h-1 bg-gradient-to-r from-primary to-primary/50 rounded-full mb-6" />
           <h2 className="text-2xl font-semibold mb-4">Need a Custom Module?</h2>
-          <p className="mb-6 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="mb-6 text-muted-foreground max-w-2xl mx-auto">
             We understand that every educational institution has unique requirements. 
             Contact us to discuss how we can create a custom module tailored to your specific needs.
           </p>
-          <Button size="lg">Contact Our Team</Button>
-        </div>
+          <AnimatedButton size="lg" withArrow>
+            Contact Our Team
+          </AnimatedButton>
+        </motion.div>
       </div>
     </div>
   );
