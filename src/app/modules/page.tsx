@@ -1,6 +1,9 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import Header from "@/components/header";
 
 const modules = [
   {
@@ -67,60 +70,64 @@ const modules = [
 
 export default function ModulesPage() {
   return (
-    <div className="container max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">Schoolgle Modules</h1>
-        <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-          Our specialized modules are designed to address the unique challenges faced by educational institutions.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {modules.map((module) => (
-          <Card key={module.id} className={`border ${module.bgColor} hover:shadow-lg transition-shadow`}>
-            <CardHeader>
-              <div className={`w-10 h-10 rounded-full ${module.iconColor} flex items-center justify-center mb-4`}>
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor" 
-                  className="w-6 h-6"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" 
-                  />
-                </svg>
-              </div>
-              <CardTitle>{module.title}</CardTitle>
-              <CardDescription>{module.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="list-disc pl-5 space-y-2">
-                {module.features.map((feature, idx) => (
-                  <li key={idx}>{feature}</li>
-                ))}
-              </ul>
-            </CardContent>
-            <CardFooter>
-              <Link href={`/modules/${module.id}`} passHref>
-                <Button className="w-full">{module.ctaText}</Button>
-              </Link>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+    <div className="min-h-screen bg-background">
+      <Header />
       
-      <div className="mt-16 text-center">
-        <h2 className="text-2xl font-semibold mb-4">Need a Custom Module?</h2>
-        <p className="mb-6 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          We understand that every educational institution has unique requirements. 
-          Contact us to discuss how we can create a custom module tailored to your specific needs.
-        </p>
-        <Button size="lg">Contact Our Team</Button>
+      <div className="container max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-4">Schoolgle Modules</h1>
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            Our specialized modules are designed to address the unique challenges faced by educational institutions.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {modules.map((module) => (
+            <Card key={module.id} className={`border ${module.bgColor} hover:shadow-lg transition-shadow`}>
+              <CardHeader>
+                <div className={`w-10 h-10 rounded-full ${module.iconColor} flex items-center justify-center mb-4`}>
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor" 
+                    className="w-6 h-6"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" 
+                    />
+                  </svg>
+                </div>
+                <CardTitle>{module.title}</CardTitle>
+                <CardDescription>{module.description}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="list-disc pl-5 space-y-2">
+                  {module.features.map((feature, idx) => (
+                    <li key={idx}>{feature}</li>
+                  ))}
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <Button className="w-full" asChild>
+                  <Link href={`/modules/${module.id}`}>{module.ctaText}</Link>
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+        
+        <div className="mt-16 text-center">
+          <h2 className="text-2xl font-semibold mb-4">Need a Custom Module?</h2>
+          <p className="mb-6 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            We understand that every educational institution has unique requirements. 
+            Contact us to discuss how we can create a custom module tailored to your specific needs.
+          </p>
+          <Button size="lg">Contact Our Team</Button>
+        </div>
       </div>
     </div>
   );
