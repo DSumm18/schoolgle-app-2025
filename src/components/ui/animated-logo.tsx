@@ -55,11 +55,15 @@ export function AnimatedLogo({
   const letterVariants: Variants = {
     hidden: { 
       y: 20, 
-      opacity: 0 
+      opacity: 0,
+      rotateX: 90,
+      textShadow: "0px 0px 0px rgba(0,0,0,0)"
     },
     visible: { 
       y: 0, 
       opacity: 1,
+      rotateX: 0,
+      textShadow: "1px 1px 0px rgba(0,0,0,0.2), 2px 2px 0px rgba(0,0,0,0.1)",
       transition: {
         type: "spring",
         stiffness: 200,
@@ -69,8 +73,14 @@ export function AnimatedLogo({
     hover: {
       y: [0, -10, 0],
       scale: [1, 1.2, 1],
+      rotateY: [0, -15, 15, -15, 0],
+      textShadow: [
+        "1px 1px 0px rgba(0,0,0,0.2), 2px 2px 0px rgba(0,0,0,0.1)",
+        "3px 3px 5px rgba(0,0,0,0.3), 5px 5px 10px rgba(0,0,0,0.1)",
+        "1px 1px 0px rgba(0,0,0,0.2), 2px 2px 0px rgba(0,0,0,0.1)"
+      ],
       transition: {
-        duration: 0.5,
+        duration: 0.7,
         repeat: 0
       }
     }
@@ -107,7 +117,7 @@ export function AnimatedLogo({
 
   // Define motion props separately
   const containerMotionProps: HTMLMotionProps<"div"> = {
-    className: `flex items-center ${sizeClasses[size]}`,
+    className: `flex items-center ${sizeClasses[size]} perspective-[1000px]`,
     variants: containerVariants,
     initial: "hidden",
     animate: "visible",
@@ -141,11 +151,11 @@ export function AnimatedLogo({
                 >
                   {i === 3 ? (
                     <div className="relative w-[1em] h-[1em] flex items-center justify-center">
-                      <div className="absolute w-[0.8em] h-[0.8em] rounded-full border-2 border-blue-500"></div>
+                      <div className="absolute w-[0.8em] h-[0.8em] rounded-full border-2 border-blue-500 bg-blue-100/30 dark:bg-blue-900/30 shadow-[0_0_10px_rgba(37,99,235,0.5)]"></div>
                     </div>
                   ) : (
                     <div className="relative w-[1em] h-[1em] flex items-center justify-center">
-                      <div className="absolute w-[0.8em] h-[0.8em] rounded-full border-2 border-green-500"></div>
+                      <div className="absolute w-[0.8em] h-[0.8em] rounded-full border-2 border-green-500 bg-green-100/30 dark:bg-green-900/30 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
                     </div>
                   )}
                 </motion.div>
@@ -153,16 +163,22 @@ export function AnimatedLogo({
             )
           }
           
-          // Regular letter rendering
+          // Regular letter rendering with 3D effect
           return (
             <motion.span 
               key={i}
-              className={letterColors[i]}
+              className={`${letterColors[i]} transform-style-3d`}
               custom={i}
               variants={letterVariants}
               style={{ 
                 transitionDelay: `${i * 50}ms`,
-                display: 'inline-block'
+                display: 'inline-block',
+                // Base 3D effect even without hover
+                textShadow: "1px 1px 0px rgba(0,0,0,0.2), 2px 2px 0px rgba(0,0,0,0.1)",
+                // Add a subtle perspective transform
+                transform: `translateZ(0px)`,
+                // Enhance with filter for more depth
+                filter: "drop-shadow(0px 2px 1px rgba(0,0,0,0.1))"
               }}
             >
               {letter}
