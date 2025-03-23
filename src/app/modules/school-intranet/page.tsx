@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,9 +14,6 @@ import {
   Palette, Calendar, Clock, AlertCircle, FileSearch, Edit
 } from 'lucide-react';
 import Link from 'next/link';
-import { WidgetGrid } from '@/components/intranet/widget-grid';
-import { MediaUpload } from '@/components/intranet/media-upload';
-import { supabase, IntranetWidget, getSchoolWidgets, getSchoolData } from '@/lib/supabase';
 
 interface AnimatedWeatherIconProps {
   type: 'sunny' | 'cloudy' | 'rainy' | 'snowy';
@@ -73,6 +70,194 @@ const weatherForecast = [
   { day: 'Friday', type: 'snowy' as const, temp: 1 },
 ];
 
+// Simple widget implementation without dnd-kit dependency
+const WidgetCard = ({ type, title, content, editMode }: { 
+  type: string, 
+  title: string, 
+  content: string, 
+  editMode: boolean 
+}) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [widgetContent, setWidgetContent] = useState(content);
+
+  return (
+    <Card className="shadow-md hover:shadow-lg transition-shadow">
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-lg">{title}</CardTitle>
+          {editMode && (
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={() => setIsEditing(!isEditing)}
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+        <CardDescription>
+          {type === 'video' && 'Upload or embed a video'}
+          {type === 'image' && 'Upload or select images'}
+          {type === 'text' && 'Share important information'}
+          {type === 'calendar' && 'Display upcoming events'}
+          {type === 'social' && 'Connect social media feeds'}
+          {type === 'links' && 'Add quick access links'}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {type === 'video' && (
+          <div className="aspect-video bg-slate-200 dark:bg-slate-800 rounded-md flex items-center justify-center">
+            {editMode ? (
+              <Button variant="outline" className="flex gap-2">
+                <Upload className="h-4 w-4" />
+                Upload Video
+              </Button>
+            ) : (
+              <Video className="h-12 w-12 text-muted-foreground" />
+            )}
+          </div>
+        )}
+        {type === 'image' && (
+          <div className="aspect-video bg-slate-200 dark:bg-slate-800 rounded-md flex items-center justify-center">
+            {editMode ? (
+              <Button variant="outline" className="flex gap-2">
+                <Image className="h-4 w-4" />
+                Upload Images
+              </Button>
+            ) : (
+              <Image className="h-12 w-12 text-muted-foreground" />
+            )}
+          </div>
+        )}
+        {type === 'text' && (
+          <>
+            {isEditing ? (
+              <div className="space-y-2">
+                <Textarea 
+                  value={widgetContent}
+                  onChange={(e) => setWidgetContent(e.target.value)}
+                  className="min-h-[100px]"
+                />
+                <div className="flex justify-end space-x-2">
+                  <Button variant="outline" onClick={() => setIsEditing(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={() => setIsEditing(false)}>
+                    Save
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">{widgetContent}</p>
+            )}
+          </>
+        )}
+        {type === 'calendar' && (
+          <div className="border rounded-md p-2">
+            <div className="flex items-center gap-2 text-sm mb-2 font-medium">
+              <Calendar className="h-4 w-4" />
+              March 2025
+            </div>
+            <ul className="space-y-2">
+              <li className="flex justify-between text-xs">
+                <span className="font-semibold">Mar 15</span>
+                <span>Parent-Teacher Conference</span>
+              </li>
+              <li className="flex justify-between text-xs">
+                <span className="font-semibold">Mar 22</span>
+                <span>School Play: "The Wizard of Oz"</span>
+              </li>
+              <li className="flex justify-between text-xs">
+                <span className="font-semibold">Mar 25</span>
+                <span>Spring Break Begins</span>
+              </li>
+            </ul>
+          </div>
+        )}
+        {type === 'social' && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md">
+              <Twitter className="h-4 w-4 text-blue-500" />
+              <div className="text-xs">
+                <p className="font-semibold">@OurSchool</p>
+                <p>Congrats to our science team for winning the regional competition!</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md">
+              <Facebook className="h-4 w-4 text-blue-700" />
+              <div className="text-xs">
+                <p className="font-semibold">Our School</p>
+                <p>Check out photos from last week's field trip to the museum!</p>
+              </div>
+            </div>
+          </div>
+        )}
+        {type === 'links' && (
+          <ul className="space-y-2 text-sm">
+            <li>
+              <Link href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline">
+                <FileText className="h-4 w-4" />
+                Student Handbook
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline">
+                <FileSearch className="h-4 w-4" />
+                Staff Directory
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline">
+                <LinkIcon className="h-4 w-4" />
+                Learning Resources
+              </Link>
+            </li>
+          </ul>
+        )}
+      </CardContent>
+      {editMode && !isEditing && (
+        <CardFooter>
+          <Button variant="outline" size="sm" className="w-full">
+            Configure Widget
+          </Button>
+        </CardFooter>
+      )}
+    </Card>
+  );
+};
+
+const WidgetGrid = ({ editMode }: { editMode: boolean }) => {
+  const widgets = [
+    { id: 1, type: 'video', title: 'School Highlights', content: 'https://example.com/school-video.mp4' },
+    { id: 2, type: 'image', title: 'School Gallery', content: '' },
+    { id: 3, type: 'text', title: 'Principal\'s Message', content: 'Welcome to our school! We are committed to providing an excellent education for all students...' },
+    { id: 4, type: 'calendar', title: 'Upcoming Events', content: '' },
+    { id: 5, type: 'social', title: 'Social Media', content: '' },
+    { id: 6, type: 'links', title: 'Quick Links', content: '' },
+  ];
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {widgets.map((widget) => (
+        <WidgetCard 
+          key={widget.id}
+          type={widget.type} 
+          title={widget.title} 
+          content={widget.content} 
+          editMode={editMode} 
+        />
+      ))}
+      {editMode && (
+        <div className="flex justify-center mt-6 col-span-full">
+          <Button variant="outline" className="w-full max-w-xs mx-auto">
+            Add New Widget
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Color presets for quick selection
 const colorPresets = [
   { primary: '#3B82F6', secondary: '#10B981' }, // Blue & Green
@@ -83,102 +268,12 @@ const colorPresets = [
   { primary: '#DC2626', secondary: '#2563EB' }, // Red & Blue
 ];
 
-// Mock data - in a real app this would come from Supabase
-const mockSchoolId = "school-123";
-const mockUserId = "user-456";
-
 export default function SchoolIntranetPage() {
   const [activeTab, setActiveTab] = useState('preview');
   const [primaryColor, setPrimaryColor] = useState('#3B82F6');
   const [secondaryColor, setSecondaryColor] = useState('#10B981');
   const [schoolName, setSchoolName] = useState('Your School Name');
   const [editMode, setEditMode] = useState(false);
-  const [widgets, setWidgets] = useState<IntranetWidget[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  
-  // Load widget data
-  useEffect(() => {
-    // Mock function - in a real app we'd use getSchoolWidgets with real ID
-    const loadWidgets = async () => {
-      try {
-        setIsLoading(true);
-        // This would be replaced with real data in production
-        // const data = await getSchoolWidgets(mockSchoolId);
-        
-        // Mock school widget data to simulate DB data
-        const mockWidgets: IntranetWidget[] = [
-          { 
-            id: "widget-1", 
-            school_id: mockSchoolId, 
-            type: 'video', 
-            title: 'School Highlights', 
-            content: 'https://example.com/school-video.mp4',
-            position: 0,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          },
-          { 
-            id: "widget-2", 
-            school_id: mockSchoolId, 
-            type: 'image', 
-            title: 'School Gallery', 
-            content: '',
-            position: 1,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          },
-          { 
-            id: "widget-3", 
-            school_id: mockSchoolId, 
-            type: 'text', 
-            title: 'Principal\'s Message', 
-            content: 'Welcome to our school! We are committed to providing an excellent education for all students...',
-            position: 2,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          },
-          { 
-            id: "widget-4", 
-            school_id: mockSchoolId, 
-            type: 'calendar', 
-            title: 'Upcoming Events', 
-            content: '',
-            position: 3,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          },
-          { 
-            id: "widget-5", 
-            school_id: mockSchoolId, 
-            type: 'social', 
-            title: 'Social Media', 
-            content: '',
-            position: 4,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          },
-          { 
-            id: "widget-6", 
-            school_id: mockSchoolId, 
-            type: 'links', 
-            title: 'Quick Links', 
-            content: '',
-            position: 5,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          }
-        ];
-        
-        setWidgets(mockWidgets);
-      } catch (err) {
-        console.error('Error loading widgets:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    loadWidgets();
-  }, []);
   
   // Simulate current user
   const currentUser = {
@@ -210,34 +305,18 @@ export default function SchoolIntranetPage() {
     setSecondaryColor(preset.secondary);
   };
 
-  // Handler for logo upload
-  const handleLogoUpload = (url: string) => {
-    console.log('Logo uploaded:', url);
-    // In a real app, we would update the school record in Supabase with the logo URL
+  // Handle file uploads (placeholder)
+  const handleFileUpload = (name: string) => {
+    console.log(`Uploading ${name}...`);
+    // This would be replaced with actual upload code
+    setTimeout(() => {
+      console.log('Upload complete!');
+    }, 2000);
   };
 
-  // Handle widget updates
-  const handleWidgetsChange = (updatedWidgets: IntranetWidget[]) => {
-    setWidgets(updatedWidgets);
-    // In a real app, this would persist to Supabase
-  };
-
-  // Save all settings
-  const saveSettings = async () => {
-    try {
-      // In a real app, this would update the school record in Supabase
-      console.log('Saving settings:', {
-        name: schoolName,
-        primaryColor,
-        secondaryColor
-      });
-      
-      // Simulate success
-      alert('Settings saved successfully!');
-    } catch (err) {
-      console.error('Error saving settings:', err);
-      alert('Failed to save settings. Please try again.');
-    }
+  // Display message about developing drag and drop capability
+  const showDragAndDropMessage = () => {
+    alert("Drag and drop functionality will be implemented once the required packages are installed. This placeholder provides the basic UI structure.");
   };
 
   return (
@@ -367,19 +446,7 @@ export default function SchoolIntranetPage() {
 
               {/* Widget Area */}
               <div className="bg-slate-50 dark:bg-slate-800 p-4">
-                {isLoading ? (
-                  <div className="text-center py-10">
-                    <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
-                    <p className="mt-4 text-muted-foreground">Loading widgets...</p>
-                  </div>
-                ) : (
-                  <WidgetGrid 
-                    widgets={widgets} 
-                    editMode={editMode} 
-                    schoolId={mockSchoolId}
-                    onWidgetsChange={handleWidgetsChange}
-                  />
-                )}
+                <WidgetGrid editMode={editMode} />
               </div>
 
               {/* Footer */}
@@ -400,7 +467,7 @@ export default function SchoolIntranetPage() {
             
             {editMode && (
               <div className="mt-4 flex justify-end">
-                <Button onClick={saveSettings}>Save Layout</Button>
+                <Button>Save Layout</Button>
               </div>
             )}
           </TabsContent>
@@ -426,15 +493,15 @@ export default function SchoolIntranetPage() {
                   </div>
                   <div>
                     <Label htmlFor="schoolLogo">School Logo</Label>
-                    <div className="mt-1">
-                      <MediaUpload 
-                        schoolId={mockSchoolId}
-                        userId={mockUserId}
-                        onUploadComplete={handleLogoUpload}
-                        acceptedTypes="image/*"
-                        buttonText="Upload Logo"
-                        maxSizeMB={5}
-                      />
+                    <div className="mt-1 flex items-center">
+                      <Button 
+                        variant="outline" 
+                        className="flex gap-2"
+                        onClick={() => handleFileUpload('logo')}
+                      >
+                        <Upload className="h-4 w-4" />
+                        Upload Logo
+                      </Button>
                     </div>
                   </div>
                   <div>
@@ -563,77 +630,78 @@ export default function SchoolIntranetPage() {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button onClick={saveSettings}>Save Settings</Button>
+                  <Button>Save Settings</Button>
                 </CardFooter>
               </Card>
             </div>
           </TabsContent>
           
           <TabsContent value="widgets" className="border rounded-lg p-6 mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Available Widgets</CardTitle>
-                  <CardDescription>
-                    Drag and drop widgets to your intranet page
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <Button variant="outline" className="w-full flex justify-start gap-2">
-                      <Video className="h-4 w-4" />
-                      Video Player
-                    </Button>
-                    <Button variant="outline" className="w-full flex justify-start gap-2">
-                      <Image className="h-4 w-4" />
-                      Image Gallery
-                    </Button>
-                    <Button variant="outline" className="w-full flex justify-start gap-2">
-                      <FileText className="h-4 w-4" />
-                      Text Block
-                    </Button>
-                    <Button variant="outline" className="w-full flex justify-start gap-2">
-                      <Calendar className="h-4 w-4" />
-                      Calendar
-                    </Button>
-                    <Button variant="outline" className="w-full flex justify-start gap-2">
-                      <Twitter className="h-4 w-4" />
-                      Social Feed
-                    </Button>
-                    <Button variant="outline" className="w-full flex justify-start gap-2">
-                      <LinkIcon className="h-4 w-4" />
-                      Quick Links
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="space-y-6">
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200 rounded">
+                <h3 className="text-lg font-medium flex items-center gap-2">
+                  <AlertCircle className="h-5 w-5" />
+                  Drag and Drop Coming Soon
+                </h3>
+                <p className="mt-2">
+                  The drag and drop functionality for widgets will be available once the required packages are installed. 
+                  This preview shows the basic layout and appearance.
+                </p>
+              </div>
               
-              <Card className="md:col-span-2">
-                <CardHeader>
-                  <CardTitle>Widget Layout</CardTitle>
-                  <CardDescription>
-                    Drag and drop widgets to arrange them on your page
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <div className="text-center py-10">
-                      <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
-                      <p className="mt-4 text-muted-foreground">Loading widgets...</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Available Widgets</CardTitle>
+                    <CardDescription>
+                      Add widgets to your intranet page
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <Button variant="outline" className="w-full flex justify-start gap-2">
+                        <Video className="h-4 w-4" />
+                        Video Player
+                      </Button>
+                      <Button variant="outline" className="w-full flex justify-start gap-2">
+                        <Image className="h-4 w-4" />
+                        Image Gallery
+                      </Button>
+                      <Button variant="outline" className="w-full flex justify-start gap-2">
+                        <FileText className="h-4 w-4" />
+                        Text Block
+                      </Button>
+                      <Button variant="outline" className="w-full flex justify-start gap-2">
+                        <Calendar className="h-4 w-4" />
+                        Calendar
+                      </Button>
+                      <Button variant="outline" className="w-full flex justify-start gap-2">
+                        <Twitter className="h-4 w-4" />
+                        Social Feed
+                      </Button>
+                      <Button variant="outline" className="w-full flex justify-start gap-2">
+                        <LinkIcon className="h-4 w-4" />
+                        Quick Links
+                      </Button>
                     </div>
-                  ) : (
-                    <WidgetGrid 
-                      widgets={widgets} 
-                      editMode={true}
-                      schoolId={mockSchoolId}
-                      onWidgetsChange={handleWidgetsChange}
-                    />
-                  )}
-                </CardContent>
-                <CardFooter>
-                  <Button onClick={saveSettings}>Save Layout</Button>
-                </CardFooter>
-              </Card>
+                  </CardContent>
+                </Card>
+                
+                <Card className="md:col-span-2">
+                  <CardHeader>
+                    <CardTitle>Widget Layout</CardTitle>
+                    <CardDescription>
+                      Customize your widget layout
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <WidgetGrid editMode={true} />
+                  </CardContent>
+                  <CardFooter>
+                    <Button onClick={showDragAndDropMessage}>Save Layout</Button>
+                  </CardFooter>
+                </Card>
+              </div>
             </div>
           </TabsContent>
         </Tabs>
