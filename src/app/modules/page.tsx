@@ -27,26 +27,11 @@ const modules = [
       "Social media integration",
       "Weather feed",
       "News ticker",
-      "Widget-based layout"
+      "Drag & drop widget layout"
     ],
     color: "bg-blue-100 text-blue-500 dark:bg-blue-900/30 dark:text-blue-300",
     gradient: "from-blue-100 to-blue-50 dark:from-blue-900/30 dark:to-blue-900/10",
     icon: MonitorSmartphone
-  },
-  {
-    id: "my-school-intranet",
-    title: "My School Intranet",
-    description: "Centralized digital platform for school communication and resources",
-    features: [
-      "Staff and student portals",
-      "Document sharing",
-      "News and announcements",
-      "Calendar integration",
-      "Personalized dashboards"
-    ],
-    color: "bg-indigo-100 text-indigo-500 dark:bg-indigo-900/30 dark:text-indigo-300",
-    gradient: "from-indigo-100 to-indigo-50 dark:from-indigo-900/30 dark:to-indigo-900/10",
-    icon: Globe
   },
   {
     id: "estate-management",
