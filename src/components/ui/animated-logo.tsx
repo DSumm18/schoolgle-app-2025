@@ -21,7 +21,7 @@ export function AnimatedLogo({
   const sizeClasses = {
     sm: "text-xl font-bold",
     md: "text-2xl font-bold",
-    lg: "text-4xl font-bold" // Increased from text-3xl to text-4xl
+    lg: "text-5xl font-bold" // Increased from text-4xl to text-5xl
   }
 
   // Define letter colors with Google-style
@@ -52,7 +52,7 @@ export function AnimatedLogo({
     }
   }
 
-  // Letter variants
+  // Letter variants - enhanced animations for all letters on hover
   const letterVariants: Variants = {
     hidden: { 
       y: 20, 
@@ -192,14 +192,14 @@ export function AnimatedLogo({
                   {i === 3 ? (
                     <div className="relative w-[1em] h-[1em] flex items-center justify-center">
                       {/* Left lens */}
-                      <div className="absolute w-[0.8em] h-[0.8em] rounded-full border-3 border-blue-600 bg-blue-50/20 dark:bg-blue-900/30 backdrop-blur-sm shadow-[0_0_15px_rgba(37,99,235,0.6)]">
+                      <div className="absolute w-[0.9em] h-[0.9em] rounded-full border-4 border-blue-600 bg-blue-50/30 dark:bg-blue-900/40 backdrop-blur-sm shadow-[0_0_15px_rgba(37,99,235,0.6)]">
                         {/* Glare effect */}
-                        <div className="absolute top-[15%] left-[15%] w-[30%] h-[30%] rounded-full bg-white/60 rotate-45 blur-[1px]"></div>
+                        <div className="absolute top-[15%] left-[15%] w-[30%] h-[30%] rounded-full bg-white/70 rotate-45 blur-[1px]"></div>
                       </div>
                       
                       {/* Right arm of glasses */}
                       <motion.div 
-                        className="absolute right-[-20%] top-[45%] h-[10%] bg-blue-600 origin-left"
+                        className="absolute right-[-20%] top-[45%] h-[15%] bg-blue-600 origin-left"
                         variants={templeVariants}
                         initial="hidden"
                         animate="visible"
@@ -208,14 +208,14 @@ export function AnimatedLogo({
                   ) : (
                     <div className="relative w-[1em] h-[1em] flex items-center justify-center">
                       {/* Right lens */}
-                      <div className="absolute w-[0.8em] h-[0.8em] rounded-full border-3 border-green-600 bg-green-50/20 dark:bg-green-900/30 backdrop-blur-sm shadow-[0_0_15px_rgba(16,185,129,0.6)]">
+                      <div className="absolute w-[0.9em] h-[0.9em] rounded-full border-4 border-green-600 bg-green-50/30 dark:bg-green-900/40 backdrop-blur-sm shadow-[0_0_15px_rgba(16,185,129,0.6)]">
                         {/* Glare effect */}
-                        <div className="absolute top-[15%] left-[15%] w-[30%] h-[30%] rounded-full bg-white/60 rotate-45 blur-[1px]"></div>
+                        <div className="absolute top-[15%] left-[15%] w-[30%] h-[30%] rounded-full bg-white/70 rotate-45 blur-[1px]"></div>
                       </div>
                       
                       {/* Left arm of glasses */}
                       <motion.div 
-                        className="absolute left-[-20%] top-[45%] h-[10%] bg-green-600 origin-right"
+                        className="absolute left-[-20%] top-[45%] h-[15%] bg-green-600 origin-right"
                         variants={templeVariants}
                         initial="hidden"
                         animate="visible"
@@ -250,20 +250,20 @@ export function AnimatedLogo({
                     animate="visible"
                   >
                     <div className="relative w-[1em] h-[1em] flex items-center justify-center">
-                      <div className="absolute w-[0.8em] h-[0.8em] rounded-full border-3 border-blue-600 bg-blue-50/20 dark:bg-blue-900/30 backdrop-blur-sm shadow-[0_0_15px_rgba(37,99,235,0.6)]">
-                        <div className="absolute top-[15%] left-[15%] w-[30%] h-[30%] rounded-full bg-white/60 rotate-45 blur-[1px]"></div>
+                      <div className="absolute w-[0.9em] h-[0.9em] rounded-full border-4 border-blue-600 bg-blue-50/30 dark:bg-blue-900/40 backdrop-blur-sm shadow-[0_0_15px_rgba(37,99,235,0.6)]">
+                        <div className="absolute top-[15%] left-[15%] w-[30%] h-[30%] rounded-full bg-white/70 rotate-45 blur-[1px]"></div>
                       </div>
                     </div>
                   </motion.div>
                   
-                  {/* Bridge between glasses */}
+                  {/* Bridge between glasses - thicker and more visible */}
                   <motion.div 
-                    className="absolute top-[45%] right-[-10%] h-[10%] bg-gradient-to-r from-blue-600 to-green-600 z-20"
+                    className="absolute top-[45%] right-[-10%] h-[15%] bg-gradient-to-r from-blue-600 to-green-600 z-20 rounded-full"
                     variants={bridgeVariants}
                     initial="hidden"
                     animate="visible"
                     style={{
-                      width: "20%",
+                      width: "30%",
                       transformOrigin: "left"
                     }}
                   ></motion.div>
@@ -288,13 +288,13 @@ export function AnimatedLogo({
                     animate="visible"
                   >
                     <div className="relative w-[1em] h-[1em] flex items-center justify-center">
-                      <div className="absolute w-[0.8em] h-[0.8em] rounded-full border-3 border-green-600 bg-green-50/20 dark:bg-green-900/30 backdrop-blur-sm shadow-[0_0_15px_rgba(16,185,129,0.6)]">
-                        <div className="absolute top-[15%] left-[15%] w-[30%] h-[30%] rounded-full bg-white/60 rotate-45 blur-[1px]"></div>
+                      <div className="absolute w-[0.9em] h-[0.9em] rounded-full border-4 border-green-600 bg-green-50/30 dark:bg-green-900/40 backdrop-blur-sm shadow-[0_0_15px_rgba(16,185,129,0.6)]">
+                        <div className="absolute top-[15%] left-[15%] w-[30%] h-[30%] rounded-full bg-white/70 rotate-45 blur-[1px]"></div>
                       </div>
                       
-                      {/* Temple (arm) of right lens */}
+                      {/* Temple (arm) of right lens - thicker */}
                       <motion.div 
-                        className="absolute right-[-35%] top-[45%] h-[10%] bg-green-600 origin-left"
+                        className="absolute right-[-35%] top-[45%] h-[15%] bg-green-600 origin-left"
                         variants={templeVariants}
                         initial="hidden"
                         animate="visible"
@@ -311,15 +311,15 @@ export function AnimatedLogo({
             return null;
           }
           
-          // Regular letter rendering with 3D effect
+          // Regular letter rendering with 3D effect - all letters now animate on hover
           return (
             <motion.span 
               key={i}
               className={`${letterColors[i]} transform-style-3d`}
               custom={i}
               variants={letterVariants}
+              whileHover="hover"
               style={{ 
-                transitionDelay: `${i * 50}ms`,
                 display: 'inline-block',
                 // Base 3D effect even without hover
                 textShadow: "1px 1px 0px rgba(0,0,0,0.2), 2px 2px 0px rgba(0,0,0,0.1)",
