@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Navigation } from '@/components/layout/navigation';
+import { PageTransition } from '@/components/ui/page-transition';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,7 +29,9 @@ export default function RootLayout({
           <div className="relative flex min-h-screen flex-col bg-background text-foreground">
             <Navigation />
             <main className="flex-1 relative overflow-hidden">
-              {children}
+              <PageTransition>
+                {children}
+              </PageTransition>
             </main>
             <footer className="border-t py-6 md:py-0">
               <div className="container flex flex-col items-center justify-between gap-4 md:h-16 md:flex-row">
