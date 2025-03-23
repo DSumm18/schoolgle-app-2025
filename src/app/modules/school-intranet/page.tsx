@@ -14,7 +14,6 @@ import {
   SunMedium, CloudRain, CloudSnow, Cloud, Twitter, Facebook,
   Palette, Calendar, Clock, AlertCircle, FileSearch, Edit
 } from 'lucide-react';
-import { HexColorPicker } from 'react-colorful';
 import Link from 'next/link';
 
 interface AnimatedWeatherIconProps {
@@ -218,6 +217,16 @@ const WidgetGrid: React.FC<{ editMode: boolean }> = ({ editMode }) => {
   );
 };
 
+// Color presets for quick selection
+const colorPresets = [
+  { primary: '#3B82F6', secondary: '#10B981' }, // Blue & Green
+  { primary: '#F59E0B', secondary: '#EF4444' }, // Amber & Red
+  { primary: '#8B5CF6', secondary: '#EC4899' }, // Purple & Pink
+  { primary: '#06B6D4', secondary: '#6366F1' }, // Cyan & Indigo
+  { primary: '#047857', secondary: '#4338CA' }, // Emerald & Indigo
+  { primary: '#DC2626', secondary: '#2563EB' }, // Red & Blue
+];
+
 export default function SchoolIntranetPage() {
   const [activeTab, setActiveTab] = useState('preview');
   const [primaryColor, setPrimaryColor] = useState('#3B82F6');
@@ -248,6 +257,12 @@ export default function SchoolIntranetPage() {
     "Spring concert tickets now available in the office",
     "New lunch menu starts next week"
   ];
+
+  // Apply color preset
+  const applyColorPreset = (preset: { primary: string, secondary: string }) => {
+    setPrimaryColor(preset.primary);
+    setSecondaryColor(preset.secondary);
+  };
 
   return (
     <div className="container mx-auto p-4 max-w-7xl">
@@ -451,39 +466,80 @@ export default function SchoolIntranetPage() {
                 <CardContent className="space-y-6">
                   <div>
                     <Label htmlFor="primaryColor">Primary Color</Label>
-                    <div className="mt-2">
-                      <HexColorPicker color={primaryColor} onChange={setPrimaryColor} />
-                      <div className="flex mt-2 gap-2">
+                    <div className="mt-2 grid grid-cols-2 gap-4">
+                      <div className="flex gap-2">
                         <Input 
                           id="primaryColor" 
                           value={primaryColor} 
                           onChange={(e) => setPrimaryColor(e.target.value)} 
                           className="flex-1"
                         />
-                        <div 
-                          className="w-10 h-10 rounded-md border" 
-                          style={{ backgroundColor: primaryColor }}
-                        ></div>
+                        <div className="relative flex items-center">
+                          <Input 
+                            type="color" 
+                            value={primaryColor}
+                            onChange={(e) => setPrimaryColor(e.target.value)}
+                            className="w-10 h-10 p-1 cursor-pointer"
+                          />
+                          <div 
+                            className="absolute top-0 right-0 bottom-0 left-0 opacity-0 cursor-pointer"
+                            style={{ background: primaryColor }}
+                          ></div>
+                        </div>
                       </div>
+                      <div 
+                        className="h-10 rounded-md border" 
+                        style={{ backgroundColor: primaryColor }}
+                      ></div>
                     </div>
                   </div>
                   
                   <div>
                     <Label htmlFor="secondaryColor">Secondary Color</Label>
-                    <div className="mt-2">
-                      <HexColorPicker color={secondaryColor} onChange={setSecondaryColor} />
-                      <div className="flex mt-2 gap-2">
+                    <div className="mt-2 grid grid-cols-2 gap-4">
+                      <div className="flex gap-2">
                         <Input 
                           id="secondaryColor" 
                           value={secondaryColor} 
                           onChange={(e) => setSecondaryColor(e.target.value)} 
                           className="flex-1"
                         />
-                        <div 
-                          className="w-10 h-10 rounded-md border" 
-                          style={{ backgroundColor: secondaryColor }}
-                        ></div>
+                        <div className="relative flex items-center">
+                          <Input 
+                            type="color" 
+                            value={secondaryColor}
+                            onChange={(e) => setSecondaryColor(e.target.value)}
+                            className="w-10 h-10 p-1 cursor-pointer"
+                          />
+                          <div 
+                            className="absolute top-0 right-0 bottom-0 left-0 opacity-0 cursor-pointer"
+                            style={{ background: secondaryColor }}
+                          ></div>
+                        </div>
                       </div>
+                      <div 
+                        className="h-10 rounded-md border" 
+                        style={{ backgroundColor: secondaryColor }}
+                      ></div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label>Color Presets</Label>
+                    <div className="mt-2 grid grid-cols-3 gap-2">
+                      {colorPresets.map((preset, index) => (
+                        <Button 
+                          key={index} 
+                          variant="outline" 
+                          className="h-12 p-1"
+                          onClick={() => applyColorPreset(preset)}
+                        >
+                          <div className="flex-1 h-full rounded overflow-hidden flex">
+                            <div className="flex-1" style={{ backgroundColor: preset.primary }}></div>
+                            <div className="flex-1" style={{ backgroundColor: preset.secondary }}></div>
+                          </div>
+                        </Button>
+                      ))}
                     </div>
                   </div>
                 </CardContent>
