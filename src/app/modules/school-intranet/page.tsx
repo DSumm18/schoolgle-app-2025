@@ -1,710 +1,487 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { motion } from 'framer-motion';
-import { 
-  Settings, Upload, Image, FileText, Video, Link as LinkIcon, 
-  SunMedium, CloudRain, CloudSnow, Cloud, Twitter, Facebook,
-  Palette, Calendar, Clock, AlertCircle, FileSearch, Edit
-} from 'lucide-react';
-import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
+import Link from "next/link";
+import { motion } from "framer-motion";
+import {
+  Cloud,
+  CloudRain,
+  CloudSnow,
+  CloudSun,
+  Cloudy,
+  Home,
+  MessageSquare,
+  Moon,
+  SunMedium,
+  Trash,
+  ChevronRight,
+  Bell,
+  Settings,
+  Edit,
+  Search,
+  Plus,
+  MonitorSmartphone,
+  AlertTriangle,
+  CloudLightning
+} from "lucide-react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 
-interface AnimatedWeatherIconProps {
-  type: 'sunny' | 'cloudy' | 'rainy' | 'snowy';
-  className?: string;
+// Placeholder component for color picker until we install a proper color picker
+function ColorPicker({ value, onChange }) {
+  // Preset colors
+  const presetColors = [
+    "#3B82F6", // Blue
+    "#10B981", // Emerald
+    "#6366F1", // Indigo
+    "#8B5CF6", // Violet
+    "#EC4899", // Pink
+    "#EF4444", // Red
+    "#F59E0B", // Amber
+    "#84CC16", // Lime
+  ];
+
+  return (
+    <div className="space-y-2">
+      <div className="flex gap-2 flex-wrap">
+        {presetColors.map(color => (
+          <button
+            key={color}
+            type="button"
+            className={`w-6 h-6 rounded-full ${value === color ? 'ring-2 ring-offset-2' : ''}`}
+            style={{ backgroundColor: color }}
+            onClick={() => onChange(color)}
+          />
+        ))}
+      </div>
+      <div className="flex gap-2 items-center">
+        <input
+          type="color"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-8 h-8 p-0 border-0 rounded-md"
+        />
+        <span className="text-xs text-muted-foreground">{value}</span>
+      </div>
+    </div>
+  );
 }
 
-const AnimatedWeatherIcon: React.FC<AnimatedWeatherIconProps> = ({ type, className = '' }) => {
-  const variants = {
-    sunny: {
-      rotate: [0, 45, 0],
-      scale: [1, 1.1, 1],
-      transition: { 
-        rotate: { repeat: Infinity, duration: 5 },
-        scale: { repeat: Infinity, duration: 2.5 }
-      }
-    },
-    cloudy: {
-      x: [0, 5, 0],
-      transition: { repeat: Infinity, duration: 3 }
-    },
-    rainy: {
-      y: [0, 5, 0],
-      transition: { repeat: Infinity, duration: 1.5 }
-    },
-    snowy: {
-      rotate: [0, 5, -5, 0],
-      y: [0, 3, 0],
-      transition: { 
-        rotate: { repeat: Infinity, duration: 3 },
-        y: { repeat: Infinity, duration: 2 }
-      }
-    }
-  };
-
+// Placeholder simple widget card for now
+function WidgetCard({ widget, editMode = false, onEdit, onDelete }) {
   return (
-    <motion.div 
-      variants={variants} 
-      animate={type}
-      className={className}
-    >
-      {type === 'sunny' && <SunMedium className="w-12 h-12 text-yellow-400" />}
-      {type === 'cloudy' && <Cloud className="w-12 h-12 text-gray-400" />}
-      {type === 'rainy' && <CloudRain className="w-12 h-12 text-blue-400" />}
-      {type === 'snowy' && <CloudSnow className="w-12 h-12 text-blue-200" />}
-    </motion.div>
-  );
-};
-
-const weatherForecast = [
-  { day: 'Monday', type: 'sunny' as const, temp: 22 },
-  { day: 'Tuesday', type: 'cloudy' as const, temp: 18 },
-  { day: 'Wednesday', type: 'rainy' as const, temp: 15 },
-  { day: 'Thursday', type: 'rainy' as const, temp: 14 },
-  { day: 'Friday', type: 'snowy' as const, temp: 1 },
-];
-
-// Simple widget implementation without dnd-kit dependency
-const WidgetCard = ({ type, title, content, editMode }: { 
-  type: string, 
-  title: string, 
-  content: string, 
-  editMode: boolean 
-}) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [widgetContent, setWidgetContent] = useState(content);
-
-  return (
-    <Card className="shadow-md hover:shadow-lg transition-shadow">
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-lg">{title}</CardTitle>
-          {editMode && (
-            <Button 
-              variant="outline" 
-              size="icon"
-              onClick={() => setIsEditing(!isEditing)}
-            >
+    <Card className="relative">
+      {editMode && (
+        <div className="absolute top-2 right-2 flex gap-1 z-10">
+          {onEdit && (
+            <Button variant="ghost" size="icon" onClick={onEdit}>
               <Edit className="h-4 w-4" />
+              <span className="sr-only">Edit</span>
+            </Button>
+          )}
+          {onDelete && (
+            <Button variant="ghost" size="icon" className="text-red-500" onClick={onDelete}>
+              <Trash className="h-4 w-4" />
+              <span className="sr-only">Delete</span>
             </Button>
           )}
         </div>
-        <CardDescription>
-          {type === 'video' && 'Upload or embed a video'}
-          {type === 'image' && 'Upload or select images'}
-          {type === 'text' && 'Share important information'}
-          {type === 'calendar' && 'Display upcoming events'}
-          {type === 'social' && 'Connect social media feeds'}
-          {type === 'links' && 'Add quick access links'}
-        </CardDescription>
+      )}
+      
+      <CardHeader>
+        <CardTitle>{widget.title}</CardTitle>
       </CardHeader>
       <CardContent>
-        {type === 'video' && (
-          <div className="aspect-video bg-slate-200 dark:bg-slate-800 rounded-md flex items-center justify-center">
-            {editMode ? (
-              <Button variant="outline" className="flex gap-2">
-                <Upload className="h-4 w-4" />
-                Upload Video
-              </Button>
-            ) : (
-              <Video className="h-12 w-12 text-muted-foreground" />
-            )}
+        {widget.type === 'text' && (
+          <div className="prose prose-sm dark:prose-invert">
+            <p>{widget.content}</p>
           </div>
         )}
-        {type === 'image' && (
-          <div className="aspect-video bg-slate-200 dark:bg-slate-800 rounded-md flex items-center justify-center">
-            {editMode ? (
-              <Button variant="outline" className="flex gap-2">
-                <Image className="h-4 w-4" />
-                Upload Images
-              </Button>
-            ) : (
-              <Image className="h-12 w-12 text-muted-foreground" />
-            )}
+        {widget.type === 'image' && (
+          <div className="aspect-video bg-muted rounded-md flex items-center justify-center">
+            <MonitorSmartphone className="h-10 w-10 text-muted-foreground" />
+            <span className="sr-only">Image placeholder</span>
           </div>
         )}
-        {type === 'text' && (
-          <>
-            {isEditing ? (
-              <div className="space-y-2">
-                <Textarea 
-                  value={widgetContent}
-                  onChange={(e) => setWidgetContent(e.target.value)}
-                  className="min-h-[100px]"
-                />
-                <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setIsEditing(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={() => setIsEditing(false)}>
-                    Save
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">{widgetContent}</p>
-            )}
-          </>
-        )}
-        {type === 'calendar' && (
-          <div className="border rounded-md p-2">
-            <div className="flex items-center gap-2 text-sm mb-2 font-medium">
-              <Calendar className="h-4 w-4" />
-              March 2025
-            </div>
-            <ul className="space-y-2">
-              <li className="flex justify-between text-xs">
-                <span className="font-semibold">Mar 15</span>
-                <span>Parent-Teacher Conference</span>
-              </li>
-              <li className="flex justify-between text-xs">
-                <span className="font-semibold">Mar 22</span>
-                <span>School Play: "The Wizard of Oz"</span>
-              </li>
-              <li className="flex justify-between text-xs">
-                <span className="font-semibold">Mar 25</span>
-                <span>Spring Break Begins</span>
-              </li>
-            </ul>
+        {widget.type === 'video' && (
+          <div className="aspect-video bg-muted rounded-md flex items-center justify-center">
+            <MonitorSmartphone className="h-10 w-10 text-muted-foreground" />
+            <span className="sr-only">Video placeholder</span>
           </div>
         )}
-        {type === 'social' && (
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md">
-              <Twitter className="h-4 w-4 text-blue-500" />
-              <div className="text-xs">
-                <p className="font-semibold">@OurSchool</p>
-                <p>Congrats to our science team for winning the regional competition!</p>
+        {widget.type === 'calendar' && (
+          <div className="p-4 border rounded-md">
+            <p className="text-center text-muted-foreground">Calendar view coming soon</p>
+          </div>
+        )}
+        {widget.type === 'social' && (
+          <div className="flex flex-col gap-2">
+            <div className="p-2 border rounded-md flex items-center gap-2">
+              <div className="h-8 w-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                <MessageSquare className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               </div>
-            </div>
-            <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md">
-              <Facebook className="h-4 w-4 text-blue-700" />
-              <div className="text-xs">
-                <p className="font-semibold">Our School</p>
-                <p>Check out photos from last week's field trip to the museum!</p>
-              </div>
+              <span>Social feed placeholder</span>
             </div>
           </div>
         )}
-        {type === 'links' && (
-          <ul className="space-y-2 text-sm">
-            <li>
-              <Link href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline">
-                <FileText className="h-4 w-4" />
-                Student Handbook
-              </Link>
-            </li>
-            <li>
-              <Link href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline">
-                <FileSearch className="h-4 w-4" />
-                Staff Directory
-              </Link>
-            </li>
-            <li>
-              <Link href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline">
-                <LinkIcon className="h-4 w-4" />
-                Learning Resources
-              </Link>
-            </li>
-          </ul>
+        {widget.type === 'links' && (
+          <div className="flex flex-col gap-2">
+            <a href="#" className="text-blue-600 dark:text-blue-400 hover:underline">School Website</a>
+            <a href="#" className="text-blue-600 dark:text-blue-400 hover:underline">Parent Portal</a>
+            <a href="#" className="text-blue-600 dark:text-blue-400 hover:underline">Calendar</a>
+          </div>
         )}
       </CardContent>
-      {editMode && !isEditing && (
-        <CardFooter>
-          <Button variant="outline" size="sm" className="w-full">
-            Configure Widget
-          </Button>
-        </CardFooter>
-      )}
     </Card>
   );
-};
+}
 
-const WidgetGrid = ({ editMode }: { editMode: boolean }) => {
-  const widgets = [
-    { id: 1, type: 'video', title: 'School Highlights', content: 'https://example.com/school-video.mp4' },
-    { id: 2, type: 'image', title: 'School Gallery', content: '' },
-    { id: 3, type: 'text', title: 'Principal\'s Message', content: 'Welcome to our school! We are committed to providing an excellent education for all students...' },
-    { id: 4, type: 'calendar', title: 'Upcoming Events', content: '' },
-    { id: 5, type: 'social', title: 'Social Media', content: '' },
-    { id: 6, type: 'links', title: 'Quick Links', content: '' },
-  ];
-
+// Simple widget grid component
+function WidgetGrid({ widgets = [], editMode = false }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {widgets.map((widget) => (
         <WidgetCard 
-          key={widget.id}
-          type={widget.type} 
-          title={widget.title} 
-          content={widget.content} 
-          editMode={editMode} 
+          key={widget.id} 
+          widget={widget} 
+          editMode={editMode}
+          onEdit={() => alert(`Edit widget: ${widget.title}`)}
+          onDelete={() => alert(`Delete widget: ${widget.title}`)}
         />
       ))}
+      
       {editMode && (
-        <div className="flex justify-center mt-6 col-span-full">
-          <Button variant="outline" className="w-full max-w-xs mx-auto">
-            Add New Widget
-          </Button>
-        </div>
+        <Card className="border-dashed flex flex-col items-center justify-center p-6 h-full">
+          <Plus className="h-8 w-8 mb-2 text-muted-foreground" />
+          <p className="text-muted-foreground">Add New Widget</p>
+        </Card>
       )}
     </div>
   );
+}
+
+// Weather icons
+const weatherIcons = {
+  sunny: SunMedium,
+  cloudy: Cloudy,
+  partlyCloudy: CloudSun,
+  rainy: CloudRain,
+  stormy: CloudLightning,
+  snowy: CloudSnow,
+  default: Cloud
 };
 
-// Color presets for quick selection
-const colorPresets = [
-  { primary: '#3B82F6', secondary: '#10B981' }, // Blue & Green
-  { primary: '#F59E0B', secondary: '#EF4444' }, // Amber & Red
-  { primary: '#8B5CF6', secondary: '#EC4899' }, // Purple & Pink
-  { primary: '#06B6D4', secondary: '#6366F1' }, // Cyan & Indigo
-  { primary: '#047857', secondary: '#4338CA' }, // Emerald & Indigo
-  { primary: '#DC2626', secondary: '#2563EB' }, // Red & Blue
-];
-
 export default function SchoolIntranetPage() {
-  const [activeTab, setActiveTab] = useState('preview');
-  const [primaryColor, setPrimaryColor] = useState('#3B82F6');
-  const [secondaryColor, setSecondaryColor] = useState('#10B981');
-  const [schoolName, setSchoolName] = useState('Your School Name');
+  const [time, setTime] = useState(new Date());
   const [editMode, setEditMode] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(3);
+  const [primaryColor, setPrimaryColor] = useState("#3B82F6");
+  const [secondaryColor, setSecondaryColor] = useState("#10B981");
+  const [logoUrl, setLogoUrl] = useState("");
+  const [weather, setWeather] = useState({
+    temperature: 18,
+    condition: 'partlyCloudy',
+    location: 'London, UK'
+  });
   
-  // Simulate current user
-  const currentUser = {
-    name: 'David',
-    role: 'Administrator'
-  };
-
-  // Get current time
-  const now = new Date();
-  const hours = now.getHours();
-  let greeting = "Good morning";
-  if (hours >= 12 && hours < 18) {
-    greeting = "Good afternoon";
-  } else if (hours >= 18) {
-    greeting = "Good evening";
-  }
-
-  // Breaking news ticker items
-  const breakingNews = [
-    "Early dismissal on Friday for staff development",
-    "Basketball team advances to state finals!",
-    "Spring concert tickets now available in the office",
-    "New lunch menu starts next week"
+  // Demo widgets
+  const widgets = [
+    { id: "widget-1", type: 'text', title: 'Principal\'s Message', content: 'Welcome to our school! We are committed to providing an excellent education for all students. Remember that parent-teacher conferences are scheduled for next week.' },
+    { id: "widget-2", type: 'calendar', title: 'Upcoming Events', content: '' },
+    { id: "widget-3", type: 'image', title: 'School Gallery', content: '' },
+    { id: "widget-4", type: 'video', title: 'School Highlights', content: '' },
+    { id: "widget-5", type: 'links', title: 'Quick Links', content: '' },
+    { id: "widget-6", type: 'social', title: 'Social Feed', content: '' },
   ];
-
-  // Apply color preset
-  const applyColorPreset = (preset: { primary: string, secondary: string }) => {
-    setPrimaryColor(preset.primary);
-    setSecondaryColor(preset.secondary);
+  
+  // Update time every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(new Date());
+    }, 60000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  // Get greeting based on time of day
+  const getGreeting = () => {
+    const hour = time.getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
   };
-
-  // Handle file uploads (placeholder)
-  const handleFileUpload = (name: string) => {
-    console.log(`Uploading ${name}...`);
-    // This would be replaced with actual upload code
-    setTimeout(() => {
-      console.log('Upload complete!');
-    }, 2000);
+  
+  // Get weather icon component
+  const WeatherIcon = weatherIcons[weather.condition] || weatherIcons.default;
+  
+  // Determine if it's day or night
+  const isDaytime = () => {
+    const hour = time.getHours();
+    return hour >= 6 && hour < 20;
   };
-
-  // Display message about developing drag and drop capability
-  const showDragAndDropMessage = () => {
-    alert("Drag and drop functionality will be implemented once the required packages are installed. This placeholder provides the basic UI structure.");
-  };
-
+  
   return (
-    <div className="container mx-auto p-4 max-w-7xl">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">School Intranet Module</h1>
-        <p className="text-lg text-muted-foreground mb-6">
-          Create a customized intranet homepage for your school with widgets, social feeds, and personalized content.
-        </p>
-        
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="preview">Preview</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
-            <TabsTrigger value="widgets">Widgets</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="preview" className="border rounded-lg p-6 mt-4">
-            <div 
-              className="rounded-lg overflow-hidden shadow-xl" 
-              style={{ 
-                backgroundColor: '#ffffff',
-                backgroundImage: `linear-gradient(135deg, ${primaryColor}20 0%, ${secondaryColor}20 100%)` 
-              }}
-            >
-              {/* School Intranet Header */}
-              <div 
-                className="px-4 py-3 text-white flex items-center justify-between"
-                style={{ backgroundColor: primaryColor }}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                    <div className="text-xl font-bold" style={{ color: primaryColor }}>
-                      {schoolName.split(' ').map(word => word[0]).join('')}
-                    </div>
-                  </div>
-                  <h2 className="text-xl font-bold">{schoolName}</h2>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <Clock className="h-5 w-5" />
-                  <span>{now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                  {editMode && (
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="text-white border-white hover:bg-white/20"
-                      onClick={() => setEditMode(false)}
-                    >
-                      Exit Edit Mode
-                    </Button>
-                  )}
-                  {!editMode && (
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="text-white border-white hover:bg-white/20"
-                      onClick={() => setEditMode(true)}
-                    >
-                      <Settings className="h-4 w-4 mr-2" />
-                      Edit Page
-                    </Button>
-                  )}
-                </div>
-              </div>
-
-              {/* User Welcome & Weather */}
-              <div className="bg-white dark:bg-slate-900 p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="md:col-span-2">
-                  <h2 className="text-2xl font-bold mb-2">
-                    {greeting}, {currentUser.name}
-                  </h2>
-                  <p className="text-muted-foreground">
-                    Today is {now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                  </p>
-                </div>
-                <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 rounded-lg p-3 shadow-inner">
-                  <h3 className="text-sm font-semibold mb-2">5-Day Weather Forecast</h3>
-                  <div className="flex justify-between">
-                    {weatherForecast.map((day, i) => (
-                      <div key={i} className="flex flex-col items-center">
-                        <span className="text-xs">{day.day.slice(0, 3)}</span>
-                        <AnimatedWeatherIcon type={day.type} />
-                        <span className="text-xs font-medium">{day.temp}°C</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Breaking News Ticker */}
-              <div 
-                className="py-2 px-4 overflow-hidden"
-                style={{ backgroundColor: secondaryColor }}
-              >
-                <div className="flex items-center gap-2 text-white">
-                  <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                  <div className="flex overflow-hidden whitespace-nowrap">
-                    <motion.div
-                      animate={{
-                        x: [0, -2000],
-                      }}
-                      transition={{
-                        x: {
-                          repeat: Infinity,
-                          repeatType: "loop",
-                          duration: 20,
-                          ease: "linear",
-                        },
-                      }}
-                      className="flex gap-8"
-                    >
-                      {breakingNews.map((item, i) => (
-                        <span key={i} className="font-medium">
-                          {item} • 
-                        </span>
-                      ))}
-                      {breakingNews.map((item, i) => (
-                        <span key={`repeat-${i}`} className="font-medium">
-                          {item} • 
-                        </span>
-                      ))}
-                    </motion.div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Widget Area */}
-              <div className="bg-slate-50 dark:bg-slate-800 p-4">
-                <WidgetGrid editMode={editMode} />
-              </div>
-
-              {/* Footer */}
-              <div 
-                className="px-4 py-3 text-white text-sm"
-                style={{ backgroundColor: primaryColor }}
-              >
-                <div className="flex justify-between items-center">
-                  <span>© 2025 {schoolName}</span>
-                  <div className="flex gap-4">
-                    <Link href="#" className="text-white hover:underline">Privacy Policy</Link>
-                    <Link href="#" className="text-white hover:underline">Contact</Link>
-                    <Link href="#" className="text-white hover:underline">Sitemap</Link>
-                  </div>
-                </div>
-              </div>
+    <div className="container mx-auto px-4 py-8">
+      {/* Breadcrumb */}
+      <div className="flex items-center text-sm text-muted-foreground mb-6">
+        <Link href="/modules" className="hover:text-primary">Modules</Link>
+        <ChevronRight className="h-4 w-4 mx-1" />
+        <span className="text-foreground">School Intranet</span>
+      </div>
+      
+      {/* Notification banner */}
+      <div className="mb-6 p-3 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 text-sm rounded-lg flex items-center gap-2">
+        <AlertTriangle className="h-4 w-4" />
+        <span>This is a preview version. Drag-and-drop widget functionality coming soon!</span>
+      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          {/* Header with weather and time */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">{getGreeting()}</h1>
+              <p className="text-muted-foreground">
+                {time.toLocaleDateString('en-GB', {
+                  weekday: 'long',
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric'
+                })}
+              </p>
             </div>
             
-            {editMode && (
-              <div className="mt-4 flex justify-end">
-                <Button>Save Layout</Button>
-              </div>
-            )}
-          </TabsContent>
-          
-          <TabsContent value="settings" className="border rounded-lg p-6 mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>School Information</CardTitle>
-                  <CardDescription>
-                    Add your school's basic information for the intranet
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="schoolName">School Name</Label>
-                    <Input 
-                      id="schoolName" 
-                      value={schoolName} 
-                      onChange={(e) => setSchoolName(e.target.value)} 
-                      placeholder="Enter your school name"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="schoolLogo">School Logo</Label>
-                    <div className="mt-1 flex items-center">
-                      <Button 
-                        variant="outline" 
-                        className="flex gap-2"
-                        onClick={() => handleFileUpload('logo')}
-                      >
-                        <Upload className="h-4 w-4" />
-                        Upload Logo
-                      </Button>
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="schoolAddress">School Address</Label>
-                    <Textarea 
-                      id="schoolAddress" 
-                      placeholder="Enter your school address"
-                      rows={3}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle>Theme Settings</CardTitle>
-                  <CardDescription>
-                    Customize the appearance of your school intranet
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div>
-                    <Label htmlFor="primaryColor">Primary Color</Label>
-                    <div className="mt-2 grid grid-cols-2 gap-4">
-                      <div className="flex gap-2">
-                        <Input 
-                          id="primaryColor" 
-                          value={primaryColor} 
-                          onChange={(e) => setPrimaryColor(e.target.value)} 
-                          className="flex-1"
-                        />
-                        <div className="relative flex items-center">
-                          <Input 
-                            type="color" 
-                            value={primaryColor}
-                            onChange={(e) => setPrimaryColor(e.target.value)}
-                            className="w-10 h-10 p-1 cursor-pointer"
-                          />
-                          <div 
-                            className="absolute top-0 right-0 bottom-0 left-0 opacity-0 cursor-pointer"
-                            style={{ background: primaryColor }}
-                          ></div>
-                        </div>
-                      </div>
-                      <div 
-                        className="h-10 rounded-md border" 
-                        style={{ backgroundColor: primaryColor }}
-                      ></div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="secondaryColor">Secondary Color</Label>
-                    <div className="mt-2 grid grid-cols-2 gap-4">
-                      <div className="flex gap-2">
-                        <Input 
-                          id="secondaryColor" 
-                          value={secondaryColor} 
-                          onChange={(e) => setSecondaryColor(e.target.value)} 
-                          className="flex-1"
-                        />
-                        <div className="relative flex items-center">
-                          <Input 
-                            type="color" 
-                            value={secondaryColor}
-                            onChange={(e) => setSecondaryColor(e.target.value)}
-                            className="w-10 h-10 p-1 cursor-pointer"
-                          />
-                          <div 
-                            className="absolute top-0 right-0 bottom-0 left-0 opacity-0 cursor-pointer"
-                            style={{ background: secondaryColor }}
-                          ></div>
-                        </div>
-                      </div>
-                      <div 
-                        className="h-10 rounded-md border" 
-                        style={{ backgroundColor: secondaryColor }}
-                      ></div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Label>Color Presets</Label>
-                    <div className="mt-2 grid grid-cols-3 gap-2">
-                      {colorPresets.map((preset, index) => (
-                        <Button 
-                          key={index} 
-                          variant="outline" 
-                          className="h-12 p-1"
-                          onClick={() => applyColorPreset(preset)}
-                        >
-                          <div className="flex-1 h-full rounded overflow-hidden flex">
-                            <div className="flex-1" style={{ backgroundColor: preset.primary }}></div>
-                            <div className="flex-1" style={{ backgroundColor: preset.secondary }}></div>
-                          </div>
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card className="md:col-span-2">
-                <CardHeader>
-                  <CardTitle>Social Media Integration</CardTitle>
-                  <CardDescription>
-                    Connect your school's social media accounts
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="twitterLink">Twitter URL</Label>
-                      <div className="flex mt-1 gap-2">
-                        <Twitter className="h-5 w-5 text-blue-400" />
-                        <Input id="twitterLink" placeholder="https://twitter.com/yourschool" />
-                      </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="facebookLink">Facebook URL</Label>
-                      <div className="flex mt-1 gap-2">
-                        <Facebook className="h-5 w-5 text-blue-600" />
-                        <Input id="facebookLink" placeholder="https://facebook.com/yourschool" />
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button>Save Settings</Button>
-                </CardFooter>
-              </Card>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="widgets" className="border rounded-lg p-6 mt-4">
-            <div className="space-y-6">
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200 rounded">
-                <h3 className="text-lg font-medium flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5" />
-                  Drag and Drop Coming Soon
-                </h3>
-                <p className="mt-2">
-                  The drag and drop functionality for widgets will be available once the required packages are installed. 
-                  This preview shows the basic layout and appearance.
-                </p>
+            <div className="flex items-center gap-6">
+              {/* Weather widget */}
+              <div className="hidden sm:flex items-center gap-2">
+                <div className="h-10 w-10 bg-sky-100 dark:bg-sky-900/30 rounded-full flex items-center justify-center">
+                  <motion.div
+                    animate={{ 
+                      y: [0, -2, 0, 2, 0],
+                      rotate: weather.condition === 'stormy' ? [-5, 5, -5] : 0
+                    }}
+                    transition={{ 
+                      repeat: Infinity, 
+                      duration: weather.condition === 'stormy' ? 1.5 : 3,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <WeatherIcon className="h-5 w-5 text-sky-600 dark:text-sky-400" />
+                  </motion.div>
+                </div>
+                <div>
+                  <div className="font-medium">{weather.temperature}°C</div>
+                  <div className="text-xs text-muted-foreground">{weather.location}</div>
+                </div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Available Widgets</CardTitle>
-                    <CardDescription>
-                      Add widgets to your intranet page
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <Button variant="outline" className="w-full flex justify-start gap-2">
-                        <Video className="h-4 w-4" />
-                        Video Player
-                      </Button>
-                      <Button variant="outline" className="w-full flex justify-start gap-2">
-                        <Image className="h-4 w-4" />
-                        Image Gallery
-                      </Button>
-                      <Button variant="outline" className="w-full flex justify-start gap-2">
-                        <FileText className="h-4 w-4" />
-                        Text Block
-                      </Button>
-                      <Button variant="outline" className="w-full flex justify-start gap-2">
-                        <Calendar className="h-4 w-4" />
-                        Calendar
-                      </Button>
-                      <Button variant="outline" className="w-full flex justify-start gap-2">
-                        <Twitter className="h-4 w-4" />
-                        Social Feed
-                      </Button>
-                      <Button variant="outline" className="w-full flex justify-start gap-2">
-                        <LinkIcon className="h-4 w-4" />
-                        Quick Links
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card className="md:col-span-2">
-                  <CardHeader>
-                    <CardTitle>Widget Layout</CardTitle>
-                    <CardDescription>
-                      Customize your widget layout
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <WidgetGrid editMode={true} />
-                  </CardContent>
-                  <CardFooter>
-                    <Button onClick={showDragAndDropMessage}>Save Layout</Button>
-                  </CardFooter>
-                </Card>
+              {/* Time-appropriate icon */}
+              <div className="h-10 w-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center">
+                {isDaytime() ? (
+                  <SunMedium className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                ) : (
+                  <Moon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                )}
               </div>
             </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+          
+          {/* Breaking news ticker */}
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-2">
+                <Badge className="bg-red-600">BREAKING</Badge>
+                <CardTitle className="text-base">Important Announcements</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-hidden whitespace-nowrap">
+                <motion.div
+                  animate={{ x: ["100%", "-100%"] }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 15,
+                    ease: "linear"
+                  }}
+                  className="text-sm"
+                >
+                  School closed this Friday for staff training day • Year 9 trip to Science Museum next Tuesday • Uniform donations needed for the second-hand sale • Congratulations to the U16 football team on their regional championship win
+                </motion.div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Tabs */}
+          <Tabs defaultValue="home">
+            <TabsList>
+              <TabsTrigger value="home">Home</TabsTrigger>
+              <TabsTrigger value="announcements">Announcements</TabsTrigger>
+              <TabsTrigger value="calendar">Calendar</TabsTrigger>
+            </TabsList>
+            <TabsContent value="home" className="space-y-6 pt-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold">My School Dashboard</h2>
+                <Button 
+                  variant={editMode ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setEditMode(!editMode)}
+                >
+                  {editMode ? "Save Layout" : "Customize Dashboard"}
+                </Button>
+              </div>
+              
+              <WidgetGrid widgets={widgets} editMode={editMode} />
+            </TabsContent>
+            
+            <TabsContent value="announcements">
+              <div className="pt-4 text-center text-muted-foreground">
+                Announcements will be displayed here.
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="calendar">
+              <div className="pt-4 text-center text-muted-foreground">
+                School calendar will be displayed here.
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+        
+        <div className="space-y-6">
+          {/* School info card */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle>My School</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="w-20 h-20 mx-auto bg-muted rounded-md flex items-center justify-center">
+                {logoUrl ? (
+                  <img 
+                    src={logoUrl} 
+                    alt="School logo" 
+                    className="max-w-full max-h-full object-contain" 
+                  />
+                ) : (
+                  <Home className="h-10 w-10 text-muted-foreground" />
+                )}
+              </div>
+              
+              <div className="text-center">
+                <h3 className="font-medium">Schoolgle Academy</h3>
+                <p className="text-sm text-muted-foreground">Excellence in Education</p>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <Button variant="outline" size="sm" className="w-full">
+                  School Website
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Setting card */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                Intranet Settings
+              </CardTitle>
+              <CardDescription>
+                Customize your school intranet
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Logo upload */}
+              <div className="space-y-2">
+                <Label htmlFor="logo-upload">School Logo</Label>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" className="w-full">
+                    Upload Logo
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Primary color */}
+              <div className="space-y-2">
+                <Label>Primary Color</Label>
+                <ColorPicker 
+                  value={primaryColor}
+                  onChange={setPrimaryColor}
+                />
+              </div>
+              
+              {/* Secondary color */}
+              <div className="space-y-2">
+                <Label>Secondary Color</Label>
+                <ColorPicker 
+                  value={secondaryColor}
+                  onChange={setSecondaryColor}
+                />
+              </div>
+              
+              <Button className="w-full mt-2">
+                Save Settings
+              </Button>
+            </CardContent>
+          </Card>
+          
+          {/* Notifications */}
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Bell className="h-4 w-4" />
+                  Notifications
+                </CardTitle>
+                {notificationCount > 0 && (
+                  <Badge>{notificationCount}</Badge>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {notificationCount === 0 ? (
+                <div className="text-center text-muted-foreground py-4">
+                  <Bell className="h-10 w-10 mx-auto mb-2 opacity-20" />
+                  <p>No new notifications</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <div className="font-medium">Staff Meeting</div>
+                    <div className="text-sm text-muted-foreground">Tomorrow at 3:30 PM in the Main Hall</div>
+                  </div>
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <div className="font-medium">New Resource Available</div>
+                    <div className="text-sm text-muted-foreground">Teaching guide for the new curriculum</div>
+                  </div>
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <div className="font-medium">Fire Drill</div>
+                    <div className="text-sm text-muted-foreground">Scheduled for Friday at 11:15 AM</div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+            <CardFooter>
+              <Button variant="ghost" size="sm" className="w-full text-xs">
+                View All Notifications
+              </Button>
+            </CardFooter>
+          </Card>
+          
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input 
+              placeholder="Search school resources..." 
+              className="pl-9"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
