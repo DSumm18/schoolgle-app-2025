@@ -7,12 +7,23 @@ A modern and clean school management application built with Next.js 15, React 19
 - **Modern UI Components**: Reusable components including Cards, Buttons, Forms, and more
 - **Responsive Design**: Works on all devices with mobile-first approach 
 - **Dark/Light Mode**: Built-in theme support with persistent preferences
+- **Animated Interface**: Smooth page transitions and interactive elements
+- **Google-Inspired Design**: Multi-colored, animated logo and vibrant UI elements
 - **Dashboard**: Central overview of activities, risk assessments, and issues
 - **Module System**:
   - Activity Management
   - Risk Assessment
   - Issue Tracker
 - **Authentication**: Simple login/registration flow
+
+## Visual Enhancements
+
+- **Animated Logo**: Colorful, Google-inspired logo with interactive hover effects
+- **Smooth Page Transitions**: Professional transitions between pages
+- **Theme Toggle**: Animated theme switching between light and dark modes
+- **Interactive Buttons**: Custom animated buttons with hover effects
+- **Animated Module Cards**: Interactive cards with gradient backgrounds
+- **Responsive Navigation**: Smooth animations in desktop and mobile views
 
 ## Modules
 
@@ -44,6 +55,8 @@ Track and resolve issues across your organization:
 - **TypeScript**: Type-safe JavaScript
 - **Tailwind CSS**: Utility-first CSS framework
 - **CVA**: Class Variance Authority for component variants
+- **Framer Motion**: Animation library for React
+- **Next Themes**: Theme management for Next.js
 
 ## Getting Started
 
@@ -93,6 +106,11 @@ schoolgle-app-2025/
 │   ├── components/            # Reusable components
 │   │   ├── layout/            # Layout components
 │   │   ├── ui/                # UI components
+│   │   │   ├── animated-logo.tsx     # Animated Google-style logo
+│   │   │   ├── animated-button.tsx   # Interactive button component
+│   │   │   ├── module-card.tsx       # Animated module card
+│   │   │   ├── page-transition.tsx   # Smooth page transitions
+│   │   │   └── theme-toggle.tsx      # Animated theme switcher
 │   │   ├── dashboard/         # Dashboard-specific components
 │   │   ├── forms/             # Form components
 │   │   └── auth/              # Authentication components
@@ -137,5 +155,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgments
 
-- Design inspired by modern educational applications
+- Design inspired by modern educational applications and Google's material design
 - Built as a clean alternative to previous versions
