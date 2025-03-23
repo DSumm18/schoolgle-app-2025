@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import { AnimatedLogo } from "@/components/ui/animated-logo";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -21,7 +22,7 @@ export default function Header() {
     <header className="w-full bg-background border-b border-border">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center">
-          <span className="text-xl font-bold">SCHOOLGLE</span>
+          <AnimatedLogo size="sm" />
         </Link>
 
         {/* Desktop Navigation */}
