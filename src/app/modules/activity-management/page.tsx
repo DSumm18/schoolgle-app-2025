@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/header";
@@ -14,17 +13,12 @@ export default function ActivityManagementPage() {
       
       <main className="container px-4 py-8 mx-auto">
         <div className="flex flex-col items-center justify-center mb-10">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col items-center"
-          >
+          <div className="flex flex-col items-center">
             <h1 className="text-3xl font-bold mb-2 text-center">Activity Management</h1>
             <p className="text-muted-foreground text-center max-w-xl">
               Plan, schedule, and track all school activities in a single dashboard.
             </p>
-          </motion.div>
+          </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
