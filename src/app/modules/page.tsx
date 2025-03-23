@@ -12,10 +12,27 @@ import {
   Briefcase, 
   MessageCircle, 
   ShoppingCart,
-  Home
+  Home,
+  Globe,
+  MonitorSmartphone
 } from "lucide-react";
 
 const modules = [
+  {
+    id: "school-intranet",
+    title: "School Intranet",
+    description: "Customizable intranet portal for your school community",
+    features: [
+      "Personalized branding",
+      "Social media integration",
+      "Weather feed",
+      "News ticker",
+      "Widget-based layout"
+    ],
+    color: "bg-blue-100 text-blue-500 dark:bg-blue-900/30 dark:text-blue-300",
+    gradient: "from-blue-100 to-blue-50 dark:from-blue-900/30 dark:to-blue-900/10",
+    icon: MonitorSmartphone
+  },
   {
     id: "my-school-intranet",
     title: "My School Intranet",
@@ -27,9 +44,9 @@ const modules = [
       "Calendar integration",
       "Personalized dashboards"
     ],
-    color: "bg-blue-100 text-blue-500 dark:bg-blue-900/30 dark:text-blue-300",
-    gradient: "from-blue-100 to-blue-50 dark:from-blue-900/30 dark:to-blue-900/10",
-    icon: Home
+    color: "bg-indigo-100 text-indigo-500 dark:bg-indigo-900/30 dark:text-indigo-300",
+    gradient: "from-indigo-100 to-indigo-50 dark:from-indigo-900/30 dark:to-indigo-900/10",
+    icon: Globe
   },
   {
     id: "estate-management",
