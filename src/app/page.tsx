@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
@@ -45,52 +47,52 @@ export default function HomePage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="flex flex-col h-full bg-white dark:bg-gray-800">
+            <Card className="flex flex-col h-full">
               <CardHeader>
                 <CardTitle>Activity Management</CardTitle>
                 <CardDescription>Module for activity management in educational institutions</CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
-                <p className="text-gray-700 dark:text-gray-300">
+                <p>
                   This module provides features for managing activity management efficiently across the school.
                 </p>
               </CardContent>
               <CardFooter>
-                <Link href="/modules/activity-management" className="text-blue-600 hover:underline">
+                <Link href="/modules/activity-management" className="text-primary hover:underline">
                   Learn more
                 </Link>
               </CardFooter>
             </Card>
             
-            <Card className="flex flex-col h-full bg-white dark:bg-gray-800">
+            <Card className="flex flex-col h-full">
               <CardHeader>
                 <CardTitle>Risk Assessment</CardTitle>
                 <CardDescription>Module for risk assessment in educational institutions</CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
-                <p className="text-gray-700 dark:text-gray-300">
+                <p>
                   This module provides features for managing risk assessment efficiently across the school.
                 </p>
               </CardContent>
               <CardFooter>
-                <Link href="/modules/risk-assessment" className="text-blue-600 hover:underline">
+                <Link href="/modules/risk-assessment" className="text-primary hover:underline">
                   Learn more
                 </Link>
               </CardFooter>
             </Card>
             
-            <Card className="flex flex-col h-full bg-white dark:bg-gray-800">
+            <Card className="flex flex-col h-full">
               <CardHeader>
                 <CardTitle>Issue Tracker</CardTitle>
                 <CardDescription>Module for tracking issues in educational institutions</CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
-                <p className="text-gray-700 dark:text-gray-300">
+                <p>
                   This module provides features for tracking and resolving issues efficiently across the school.
                 </p>
               </CardContent>
               <CardFooter>
-                <Link href="/modules/issue-tracker" className="text-blue-600 hover:underline">
+                <Link href="/modules/issue-tracker" className="text-primary hover:underline">
                   Learn more
                 </Link>
               </CardFooter>
@@ -100,11 +102,11 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-800">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-background">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">What Our Users Say</h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Hear from educational institutions that have transformed their operations with Schoolgle.
             </p>
           </div>
@@ -124,7 +126,7 @@ export default function HomePage() {
                 image: "https://randomuser.me/api/portraits/men/5.jpg"
               }
             ].map((testimonial, index) => (
-              <Card key={index} className="bg-gray-50 dark:bg-gray-700 border-none">
+              <Card key={index} className="bg-muted border-none">
                 <CardContent className="pt-6">
                   <div className="flex flex-col">
                     <div className="flex items-center mb-4">
@@ -137,10 +139,10 @@ export default function HomePage() {
                       </div>
                       <div>
                         <p className="font-semibold">{testimonial.name}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{testimonial.title}</p>
+                        <p className="text-sm text-muted-foreground">{testimonial.title}</p>
                       </div>
                     </div>
-                    <blockquote className="text-gray-700 dark:text-gray-300 italic">
+                    <blockquote className="text-foreground italic">
                       "{testimonial.quote}"
                     </blockquote>
                   </div>
@@ -152,16 +154,16 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-blue-600 text-white">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-primary text-primary-foreground">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Transform Your School's Operations?</h2>
           <p className="text-xl max-w-3xl mx-auto mb-8">
             Join hundreds of educational institutions using Schoolgle to streamline their operations.
           </p>
-          <Button size="lg" className="bg-white text-blue-700 hover:bg-gray-100">
+          <Button size="lg" variant="secondary">
             Get Started Today
           </Button>
-          <p className="mt-4 text-sm text-blue-200">
+          <p className="mt-4 text-sm opacity-90">
             Current date: {currentDate}
           </p>
         </div>
