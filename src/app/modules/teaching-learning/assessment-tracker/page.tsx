@@ -209,9 +209,9 @@ export default function AssessmentTrackerPage() {
   const years = ["All", ...Array.from(new Set(assessments.map(a => a.year)))];
 
   // Analytics calculations
-  const completedAssessments = assessments.filter(a => a.status === "Completed");
+  const completedAssessments = assessments.filter(a => a.status === "Completed" && a.averageScore !== null);
   const averageScoreOverall = completedAssessments.length > 0 
-    ? completedAssessments.reduce((acc, curr) => acc + curr.averageScore, 0) / completedAssessments.length 
+    ? completedAssessments.reduce((acc, curr) => acc + (curr.averageScore || 0), 0) / completedAssessments.length 
     : 0;
   
   const submissionRate = assessments.reduce((acc, curr) => acc + curr.submissions, 0) / 
