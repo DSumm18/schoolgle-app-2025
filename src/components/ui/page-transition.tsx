@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, HTMLMotionProps, Variants } from "framer-motion"
 import { usePathname } from 'next/navigation'
 
 interface PageTransitionProps {
@@ -16,7 +16,7 @@ export function PageTransition({ children }: PageTransitionProps) {
     window.scrollTo(0, 0)
   }, [pathname])
   
-  const variants = {
+  const variants: Variants = {
     hidden: { opacity: 0, x: 0, y: 20 },
     enter: { 
       opacity: 1, 
@@ -38,16 +38,19 @@ export function PageTransition({ children }: PageTransitionProps) {
     }
   }
 
+  // Define motion props separately
+  const motionProps: HTMLMotionProps<"div"> = {
+    key: pathname,
+    initial: "hidden",
+    animate: "enter",
+    exit: "exit",
+    variants: variants,
+    className: "w-full"
+  }
+
   return (
     <AnimatePresence mode="wait">
-      <motion.div
-        key={pathname}
-        initial="hidden"
-        animate="enter"
-        exit="exit"
-        variants={variants}
-        className="w-full"
-      >
+      <motion.div {...motionProps}>
         {children}
       </motion.div>
     </AnimatePresence>
