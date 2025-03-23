@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react'
-import { motion, HTMLMotionProps, Variant } from 'framer-motion'
+import { motion, HTMLMotionProps, Variants } from 'framer-motion'
 import Link from 'next/link'
 
 interface AnimatedLogoProps {
@@ -35,7 +35,7 @@ export function AnimatedLogo({
   ]
 
   // Animation variants
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: {},
     visible: {
       transition: {
@@ -49,12 +49,12 @@ export function AnimatedLogo({
     }
   }
 
-  // Properly type the custom variant
-  const letterVariants = {
+  // Properly type the variants
+  const letterVariants: Variants = {
     hidden: { 
       y: 20, 
       opacity: 0 
-    } as Variant,
+    },
     visible: { 
       y: 0, 
       opacity: 1,
@@ -63,19 +63,19 @@ export function AnimatedLogo({
         stiffness: 200,
         damping: 10
       }
-    } as Variant,
-    hover: (i: number) => ({
+    },
+    hover: {
       y: [0, -10, 0],
       transition: {
         duration: 0.5,
-        delay: i * 0.05,
         repeat: 0
       }
-    }) as Variant
+    }
   }
 
   // Define motion props separately
   const containerMotionProps: HTMLMotionProps<"div"> = {
+    className: `flex items-center ${sizeClasses[size]}`,
     variants: containerVariants,
     initial: "hidden",
     animate: "visible",
@@ -84,16 +84,17 @@ export function AnimatedLogo({
 
   return (
     <Link href="/" className={className}>
-      <motion.div 
-        className={`flex items-center ${sizeClasses[size]}`}
-        {...containerMotionProps}
-      >
+      <motion.div {...containerMotionProps}>
         {'Schoolgle'.split('').map((letter, i) => (
           <motion.span 
             key={i}
             className={letterColors[i]}
             custom={i}
             variants={letterVariants}
+            style={{ 
+              // Apply staggered animation delay directly via style
+              transitionDelay: `${i * 50}ms`
+            }}
           >
             {letter}
           </motion.span>
