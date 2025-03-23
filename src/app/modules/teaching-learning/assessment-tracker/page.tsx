@@ -195,7 +195,7 @@ export default function AssessmentTrackerPage() {
     });
 
   // Toggle sort direction
-  const toggleSort = (field) => {
+  const toggleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
