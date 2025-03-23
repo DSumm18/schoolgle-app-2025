@@ -17,10 +17,11 @@ export function AnimatedLogo({
 }: AnimatedLogoProps) {
   const [isGlassesMode, setIsGlassesMode] = useState(false);
   
+  // Define size classes based on prop
   const sizeClasses = {
     sm: "text-xl font-bold",
     md: "text-2xl font-bold",
-    lg: "text-3xl font-bold"
+    lg: "text-4xl font-bold" // Increased from text-3xl to text-4xl
   }
 
   // Define letter colors with Google-style
@@ -86,19 +87,57 @@ export function AnimatedLogo({
     }
   }
 
-  // Glasses animation variant
+  // Enhanced glasses animation variants
   const glassesVariants: Variants = {
     hidden: { 
       scale: 0,
-      opacity: 0
+      opacity: 0,
+      rotateX: 90
     },
     visible: { 
       scale: 1,
       opacity: 1,
+      rotateX: 0,
       transition: {
         type: "spring",
         stiffness: 300,
         damping: 15
+      }
+    }
+  }
+
+  // Bridge animation for glasses
+  const bridgeVariants: Variants = {
+    hidden: {
+      width: 0,
+      opacity: 0
+    },
+    visible: {
+      width: "100%",
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 20,
+        delay: 0.1
+      }
+    }
+  }
+
+  // Temples animation (glasses arms)
+  const templeVariants: Variants = {
+    hidden: {
+      width: 0,
+      opacity: 0
+    },
+    visible: {
+      width: "70%",
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 200,
+        damping: 15,
+        delay: 0.2
       }
     }
   }
@@ -108,10 +147,10 @@ export function AnimatedLogo({
     setTimeout(() => {
       setIsGlassesMode(true);
       
-      // Reset back to normal mode after 2 seconds
+      // Reset back to normal mode after 2.5 seconds
       setTimeout(() => {
         setIsGlassesMode(false);
-      }, 2000);
+      }, 2500);
     }, 300);
   }
 
@@ -149,18 +188,127 @@ export function AnimatedLogo({
                   initial="hidden"
                   animate="visible"
                 >
+                  {/* Enhanced glasses lens with realistic look */}
                   {i === 3 ? (
                     <div className="relative w-[1em] h-[1em] flex items-center justify-center">
-                      <div className="absolute w-[0.8em] h-[0.8em] rounded-full border-2 border-blue-500 bg-blue-100/30 dark:bg-blue-900/30 shadow-[0_0_10px_rgba(37,99,235,0.5)]"></div>
+                      {/* Left lens */}
+                      <div className="absolute w-[0.8em] h-[0.8em] rounded-full border-3 border-blue-600 bg-blue-50/20 dark:bg-blue-900/30 backdrop-blur-sm shadow-[0_0_15px_rgba(37,99,235,0.6)]">
+                        {/* Glare effect */}
+                        <div className="absolute top-[15%] left-[15%] w-[30%] h-[30%] rounded-full bg-white/60 rotate-45 blur-[1px]"></div>
+                      </div>
+                      
+                      {/* Right arm of glasses */}
+                      <motion.div 
+                        className="absolute right-[-20%] top-[45%] h-[10%] bg-blue-600 origin-left"
+                        variants={templeVariants}
+                        initial="hidden"
+                        animate="visible"
+                      ></motion.div>
                     </div>
                   ) : (
                     <div className="relative w-[1em] h-[1em] flex items-center justify-center">
-                      <div className="absolute w-[0.8em] h-[0.8em] rounded-full border-2 border-green-500 bg-green-100/30 dark:bg-green-900/30 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                      {/* Right lens */}
+                      <div className="absolute w-[0.8em] h-[0.8em] rounded-full border-3 border-green-600 bg-green-50/20 dark:bg-green-900/30 backdrop-blur-sm shadow-[0_0_15px_rgba(16,185,129,0.6)]">
+                        {/* Glare effect */}
+                        <div className="absolute top-[15%] left-[15%] w-[30%] h-[30%] rounded-full bg-white/60 rotate-45 blur-[1px]"></div>
+                      </div>
+                      
+                      {/* Left arm of glasses */}
+                      <motion.div 
+                        className="absolute left-[-20%] top-[45%] h-[10%] bg-green-600 origin-right"
+                        variants={templeVariants}
+                        initial="hidden"
+                        animate="visible"
+                      ></motion.div>
                     </div>
                   )}
                 </motion.div>
               </div>
             )
+          }
+          
+          // For index 3.5 - add a bridge between the glasses
+          if (i === 3 && isGlassesMode) {
+            return (
+              <>
+                {/* Rendered lens for 'o' */}
+                <div key={`${i}-lens`} className="relative inline-block w-[1em] h-[1em] mx-[-0.05em]">
+                  {/* Hide the original letter when in glasses mode */}
+                  <motion.span 
+                    className={letterColors[i]}
+                    animate={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {letter}
+                  </motion.span>
+                  
+                  {/* Left lens */}
+                  <motion.div 
+                    className="absolute top-0 left-0 w-full h-full flex items-center justify-center"
+                    variants={glassesVariants}
+                    initial="hidden"
+                    animate="visible"
+                  >
+                    <div className="relative w-[1em] h-[1em] flex items-center justify-center">
+                      <div className="absolute w-[0.8em] h-[0.8em] rounded-full border-3 border-blue-600 bg-blue-50/20 dark:bg-blue-900/30 backdrop-blur-sm shadow-[0_0_15px_rgba(37,99,235,0.6)]">
+                        <div className="absolute top-[15%] left-[15%] w-[30%] h-[30%] rounded-full bg-white/60 rotate-45 blur-[1px]"></div>
+                      </div>
+                    </div>
+                  </motion.div>
+                  
+                  {/* Bridge between glasses */}
+                  <motion.div 
+                    className="absolute top-[45%] right-[-10%] h-[10%] bg-gradient-to-r from-blue-600 to-green-600 z-20"
+                    variants={bridgeVariants}
+                    initial="hidden"
+                    animate="visible"
+                    style={{
+                      width: "20%",
+                      transformOrigin: "left"
+                    }}
+                  ></motion.div>
+                </div>
+                
+                {/* Rendered lens for 'o' */}
+                <div key={`${i+1}-lens`} className="relative inline-block w-[1em] h-[1em] mx-[-0.05em]">
+                  {/* Hide the original letter when in glasses mode */}
+                  <motion.span 
+                    className={letterColors[i+1]}
+                    animate={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {letter}
+                  </motion.span>
+                  
+                  {/* Right lens */}
+                  <motion.div 
+                    className="absolute top-0 left-0 w-full h-full flex items-center justify-center"
+                    variants={glassesVariants}
+                    initial="hidden"
+                    animate="visible"
+                  >
+                    <div className="relative w-[1em] h-[1em] flex items-center justify-center">
+                      <div className="absolute w-[0.8em] h-[0.8em] rounded-full border-3 border-green-600 bg-green-50/20 dark:bg-green-900/30 backdrop-blur-sm shadow-[0_0_15px_rgba(16,185,129,0.6)]">
+                        <div className="absolute top-[15%] left-[15%] w-[30%] h-[30%] rounded-full bg-white/60 rotate-45 blur-[1px]"></div>
+                      </div>
+                      
+                      {/* Temple (arm) of right lens */}
+                      <motion.div 
+                        className="absolute right-[-35%] top-[45%] h-[10%] bg-green-600 origin-left"
+                        variants={templeVariants}
+                        initial="hidden"
+                        animate="visible"
+                      ></motion.div>
+                    </div>
+                  </motion.div>
+                </div>
+              </>
+            );
+          }
+          
+          // Skip rendering the second 'o' if we've already rendered both 'o's in glasses mode
+          if (i === 4 && isGlassesMode) {
+            return null;
           }
           
           // Regular letter rendering with 3D effect
