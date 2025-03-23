@@ -62,11 +62,9 @@ export default function ActivityManagementPage() {
         </div>
         
         <div className="flex justify-center mt-6">
-          <Link href="/modules" passHref>
-            <Button variant="outline" className="mr-2" asChild>
-              <span>Back to Modules</span>
-            </Button>
-          </Link>
+          <Button variant="outline" className="mr-2" asChild>
+            <Link href="/modules">Back to Modules</Link>
+          </Button>
           
           <Button>Create New Activity</Button>
         </div>
