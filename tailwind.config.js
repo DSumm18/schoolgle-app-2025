@@ -64,5 +64,16 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    // Try to require tailwindcss-animate, but continue if it fails
+    function({ addBase, addComponents, addUtilities }) {
+      try {
+        return require("tailwindcss-animate");
+      } catch (error) {
+        console.warn("Warning: tailwindcss-animate not found, some animations may not work");
+        // Return a no-op plugin
+        return { handler: () => {} };
+      }
+    }
+  ],
 };
