@@ -38,19 +38,21 @@ export function PageTransition({ children }: PageTransitionProps) {
     }
   }
 
-  // Define motion props separately
-  const motionProps: HTMLMotionProps<"div"> = {
-    key: pathname,
+  // Define motion props separately - HTMLMotionProps doesn't include 'key'
+  const motionProps = {
     initial: "hidden",
     animate: "enter",
     exit: "exit",
     variants: variants,
     className: "w-full"
-  }
+  } as const
 
   return (
     <AnimatePresence mode="wait">
-      <motion.div {...motionProps}>
+      <motion.div
+        key={pathname}
+        {...motionProps}
+      >
         {children}
       </motion.div>
     </AnimatePresence>
