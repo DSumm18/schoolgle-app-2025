@@ -153,13 +153,13 @@ export default function HomePage() {
               className="flex justify-center lg:justify-start mb-8"
               variants={itemVariants}
             >
-              {/* Logo with double the size */}
-              <div className="scale-[2.0] origin-left transform-gpu">
+              {/* Logo with triple the size */}
+              <div className="scale-[3.0] origin-left transform-gpu mb-6">
                 <AnimatedLogo size="lg" />
               </div>
             </motion.div>
             <motion.p 
-              className="text-2xl sm:text-3xl max-w-xl lg:max-w-2xl mx-auto lg:mx-0 mb-10 mt-10 font-light"
+              className="text-2xl sm:text-3xl lg:text-4xl max-w-xl lg:max-w-2xl mx-auto lg:mx-0 mb-10 mt-16 font-light"
               variants={itemVariants}
             >
               A modern platform for educational institutions to manage activities, assess risks, and track issues efficiently.
