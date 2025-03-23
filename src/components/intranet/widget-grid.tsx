@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState } from 'react';
 import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core';
 import { SortableContext, arrayMove, rectSortingStrategy } from '@dnd-kit/sortable';
