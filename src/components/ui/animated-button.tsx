@@ -1,17 +1,21 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
+import { motion, HTMLMotionProps } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import Link from "next/link"
 
-interface AnimatedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface AnimatedButtonProps {
   href?: string
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link"
   size?: "default" | "sm" | "lg" | "icon"
   children: React.ReactNode
   withArrow?: boolean
+  className?: string
+  onClick?: () => void
+  disabled?: boolean
+  type?: "button" | "submit" | "reset"
 }
 
 export function AnimatedButton({
@@ -21,6 +25,9 @@ export function AnimatedButton({
   withArrow = false,
   href,
   children,
+  onClick,
+  disabled,
+  type = "button",
   ...props
 }: AnimatedButtonProps) {
   const buttonClasses = cn(
@@ -59,12 +66,19 @@ export function AnimatedButton({
     )
   }
   
+  // Define motion props separately to avoid type conflicts
+  const motionProps: HTMLMotionProps<"button"> = {
+    whileHover: { scale: 1.03 },
+    whileTap: { scale: 0.97 }
+  }
+  
   return (
     <motion.button
       className={buttonClasses}
-      whileHover={{ scale: 1.03 }}
-      whileTap={{ scale: 0.97 }}
-      {...props}
+      onClick={onClick}
+      disabled={disabled}
+      type={type}
+      {...motionProps}
     >
       <ButtonContent />
     </motion.button>
