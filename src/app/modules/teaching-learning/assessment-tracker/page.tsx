@@ -204,9 +204,9 @@ export default function AssessmentTrackerPage() {
     }
   };
 
-  // Get unique subjects and years for filters
-  const subjects = ["All", ...new Set(assessments.map(a => a.subject))];
-  const years = ["All", ...new Set(assessments.map(a => a.year))];
+  // Get unique subjects and years for filters - using Array.from for better compatibility
+  const subjects = ["All", ...Array.from(new Set(assessments.map(a => a.subject)))];
+  const years = ["All", ...Array.from(new Set(assessments.map(a => a.year)))];
 
   // Analytics calculations
   const completedAssessments = assessments.filter(a => a.status === "Completed");
