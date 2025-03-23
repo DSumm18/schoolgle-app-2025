@@ -1,4 +1,4 @@
-# Schoolgle App 2025
+# Schoolgle App
 
 A modern and clean school management application built with Next.js 15, React 19, TypeScript, and Tailwind CSS.
 
@@ -18,7 +18,7 @@ A modern and clean school management application built with Next.js 15, React 19
 
 ## Visual Enhancements
 
-- **Animated Logo**: Colorful, Google-inspired logo with interactive hover effects
+- **Animated Logo**: Colorful, Google-inspired logo with interactive hover effects and glasses animation
 - **Smooth Page Transitions**: Professional transitions between pages
 - **Theme Toggle**: Animated theme switching between light and dark modes
 - **Interactive Buttons**: Custom animated buttons with hover effects
@@ -95,7 +95,7 @@ http://localhost:3000
 ## Project Structure
 
 ```
-schoolgle-app-2025/
+schoolgle-app/
 ├── src/                       # Source code
 │   ├── app/                   # Next.js app directory
 │   │   ├── dashboard/         # Dashboard pages
