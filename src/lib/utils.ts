@@ -1,26 +1,27 @@
-/**
- * Combines multiple class names into a single string
- */
-export function cn(...classes: (string | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+import { format, parseISO } from "date-fns"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
 }
 
-/**
- * Formats a date string to a readable format
- */
-export function formatDate(date: string | Date) {
-  const d = new Date(date);
-  return d.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  });
+export function formatDate(dateString: string) {
+  try {
+    const date = parseISO(dateString)
+    return format(date, "PPP")
+  } catch (error) {
+    return dateString
+  }
 }
 
-/**
- * Truncates a string to a specified length and adds ellipsis
- */
 export function truncateString(str: string, length: number) {
-  if (str.length <= length) return str;
-  return `${str.slice(0, length)}...`;
+  if (!str) return ""
+  return str.length > length ? str.substring(0, length) + "..." : str
+}
+
+export function generateId(prefix: string) {
+  const random = Math.random().toString(36).substring(2, 8)
+  const timestamp = Date.now().toString().substring(9)
+  return `${prefix}-${timestamp}${random}`
 }
