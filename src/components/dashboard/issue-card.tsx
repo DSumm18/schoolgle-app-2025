@@ -79,25 +79,25 @@ export function IssueCard({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 mb-4">
+        <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
           {description}
         </p>
         
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div>
-            <span className="text-gray-600 dark:text-gray-400 block">Category:</span>
+            <span className="text-muted-foreground block">Category:</span>
             <span>{category}</span>
           </div>
           <div>
-            <span className="text-gray-600 dark:text-gray-400 block">Assignee:</span>
+            <span className="text-muted-foreground block">Assignee:</span>
             <span>{assignee || "Unassigned"}</span>
           </div>
           <div>
-            <span className="text-gray-600 dark:text-gray-400 block">Created:</span>
+            <span className="text-muted-foreground block">Created:</span>
             <span>{formatDate(createdAt)}</span>
           </div>
           <div>
-            <span className="text-gray-600 dark:text-gray-400 block">Updated:</span>
+            <span className="text-muted-foreground block">Updated:</span>
             <span>{formatDate(updatedAt)}</span>
           </div>
         </div>
