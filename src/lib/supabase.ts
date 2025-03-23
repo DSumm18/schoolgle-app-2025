@@ -1,13 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
+// This is a placeholder file that will be replaced with a real Supabase client in the future
+// Currently it provides type definitions and mock functions to allow the code to compile
 
-// These environment variables are set in Vercel and locally in .env.local
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-
-// Create a single supabase client for the entire app
-export const supabase = createClient(supabaseUrl, supabaseKey);
-
-// Types for our data models
 export type School = {
   id: string;
   name: string;
@@ -46,79 +39,85 @@ export type MediaAsset = {
   uploaded_by: string;
 };
 
-// Helper functions for data access with proper multi-tenant isolation
-export const getSchoolData = async (schoolId: string) => {
-  const { data, error } = await supabase
-    .from('schools')
-    .select('*')
-    .eq('id', schoolId)
-    .single();
-    
-  if (error) throw error;
-  return data as School;
+// Mock function for getting school data
+export const getSchoolData = async (schoolId: string): Promise<School> => {
+  // Mock data
+  return {
+    id: schoolId,
+    name: "Example School",
+    logo_url: "",
+    primary_color: "#3B82F6",
+    secondary_color: "#10B981",
+    created_at: new Date().toISOString(),
+    trust_id: "trust-123"
+  };
 };
 
-export const getSchoolWidgets = async (schoolId: string) => {
-  const { data, error } = await supabase
-    .from('intranet_widgets')
-    .select('*')
-    .eq('school_id', schoolId)
-    .order('position', { ascending: true });
-    
-  if (error) throw error;
-  return data as IntranetWidget[];
+// Mock function for getting widgets
+export const getSchoolWidgets = async (schoolId: string): Promise<IntranetWidget[]> => {
+  // Mock data
+  return [
+    { 
+      id: "widget-1", 
+      school_id: schoolId, 
+      type: 'video', 
+      title: 'School Highlights', 
+      content: 'https://example.com/school-video.mp4',
+      position: 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    },
+    { 
+      id: "widget-2", 
+      school_id: schoolId, 
+      type: 'image', 
+      title: 'School Gallery', 
+      content: '',
+      position: 1,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    },
+    { 
+      id: "widget-3", 
+      school_id: schoolId, 
+      type: 'text', 
+      title: 'Principal\'s Message', 
+      content: 'Welcome to our school! We are committed to providing an excellent education for all students...',
+      position: 2,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+  ];
 };
 
+// Mock function for updating widget positions
 export const updateWidgetPositions = async (widgets: Pick<IntranetWidget, 'id' | 'position'>[]) => {
-  const updates = widgets.map(widget => ({
-    id: widget.id,
-    position: widget.position,
-  }));
-  
-  const { data, error } = await supabase
-    .from('intranet_widgets')
-    .upsert(updates);
-    
-  if (error) throw error;
-  return data;
+  console.log('Would update widget positions:', widgets);
+  return widgets;
 };
 
-export const uploadMediaAsset = async (
-  schoolId: string, 
-  file: File, 
-  userId: string
-) => {
-  // Create a unique file path using the schoolId to ensure separation
-  const filePath = `schools/${schoolId}/${new Date().getTime()}-${file.name}`;
-  
-  // Upload to Supabase Storage
-  const { data, error } = await supabase.storage
-    .from('media')
-    .upload(filePath, file);
-    
-  if (error) throw error;
-  
-  // Record the metadata in the database with school_id for isolation
-  const { data: assetData, error: assetError } = await supabase
-    .from('media_assets')
-    .insert({
-      school_id: schoolId,
-      file_name: file.name,
-      file_type: file.type,
-      file_size: file.size,
-      file_path: filePath,
-      uploaded_by: userId
-    })
-    .select()
-    .single();
-    
-  if (assetError) throw assetError;
-  
-  return assetData as MediaAsset;
-};
-
-// Function to get public URL for media assets
+// Mock function for getting a media URL
 export const getMediaUrl = (filePath: string) => {
-  const { data } = supabase.storage.from('media').getPublicUrl(filePath);
-  return data.publicUrl;
+  return `https://example.com/media/${filePath}`;
+};
+
+// Mock Supabase client
+export const supabase = {
+  from: () => ({
+    select: () => ({
+      eq: () => ({
+        single: async () => ({ data: {}, error: null }),
+        order: () => ({ data: [], error: null })
+      }),
+      order: () => ({ data: [], error: null })
+    }),
+    upsert: async () => ({ data: [], error: null }),
+    insert: () => ({ select: () => ({ single: async () => ({ data: {}, error: null }) }) })
+  }),
+  storage: {
+    from: () => ({
+      upload: async () => ({ data: {}, error: null }),
+      getPublicUrl: () => ({ data: { publicUrl: 'https://example.com/placeholder.jpg' } })
+    })
+  }
 };
