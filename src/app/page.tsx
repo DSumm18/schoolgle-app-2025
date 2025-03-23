@@ -188,8 +188,14 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-background">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-background relative">
+        {/* Subtle background shading for light mode */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-50 opacity-70 dark:opacity-0 pointer-events-none" />
+        
+        {/* Subtle background shading for dark mode */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 opacity-0 dark:opacity-30 pointer-events-none" />
+        
+        <div className="max-w-6xl mx-auto relative z-10">
           <motion.div {...featuresSectionProps}>
             <h2 className="text-3xl font-bold mb-4">Key Features</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -268,8 +274,14 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-muted/30">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-muted/30 relative">
+        {/* Subtle background shading for light mode */}
+        <div className="absolute inset-0 bg-gradient-to-tl from-slate-100 via-slate-50 to-slate-100 opacity-70 dark:opacity-0 pointer-events-none" />
+        
+        {/* Subtle background shading for dark mode */}
+        <div className="absolute inset-0 bg-gradient-to-tl from-slate-900 via-slate-800 to-slate-900 opacity-0 dark:opacity-30 pointer-events-none" />
+        
+        <div className="max-w-6xl mx-auto relative z-10">
           <motion.div {...testimonialsSectionProps}>
             <h2 className="text-3xl font-bold mb-4">What Our Users Say</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
