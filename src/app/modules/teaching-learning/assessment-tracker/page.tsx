@@ -58,6 +58,8 @@ interface StatusCountsType {
   [key: string]: number;
 }
 
+interface ChevronRightProps extends React.SVGProps<SVGSVGElement> {}
+
 // Sample data
 const mockAssessments = [
   {
@@ -630,7 +632,7 @@ export default function AssessmentTrackerPage() {
   );
 }
 
-function ChevronRight(props) {
+function ChevronRight(props: ChevronRightProps) {
   return (
     <svg
       {...props}
