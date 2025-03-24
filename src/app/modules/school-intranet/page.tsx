@@ -4,6 +4,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { WeatherWidget } from '@/components/widgets/WeatherWidget';
 
 export default function SchoolIntranetPage() {
   return (
@@ -25,44 +26,7 @@ export default function SchoolIntranetPage() {
 
         <TabsContent value="dashboard" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Card className="h-full">
-              <CardHeader>
-                <CardTitle className="text-sm font-medium text-center">Weather Forecast</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-2xl font-bold">21°C</h3>
-                      <p className="text-sm text-muted-foreground">Partly Cloudy</p>
-                    </div>
-                    <div className="text-blue-500">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="44"
-                        height="44"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M17.5 17.5 16 19" />
-                        <path d="M6.5 17.5 8 19" />
-                        <path d="M8 10h8" />
-                        <path d="M12 10v8" />
-                        <path d="M12 2v4" />
-                        <path d="m4.9 4.9 2.8 2.8" />
-                        <path d="m16.3 4.9-2.8 2.8" />
-                        <path d="M20 12h-4" />
-                        <path d="M4 12h4" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <WeatherWidget />
 
             <Card className="h-full">
               <CardHeader>
