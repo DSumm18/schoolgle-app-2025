@@ -1,7 +1,7 @@
 import React from 'react'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import { ImportPreviewData, ImportError } from '@/lib/services/import-service'
+import type { ImportPreviewData, ImportError } from '@/lib/types/import-types'
 
 interface ImportDataFormProps {
   data: ImportPreviewData[]
@@ -10,7 +10,7 @@ interface ImportDataFormProps {
   isLoading?: boolean
 }
 
-export default function ImportDataForm({ data = [], errors = [], onSubmit, isLoading = false }: ImportDataFormProps) {
+const ImportDataForm: React.FC<ImportDataFormProps> = ({ data = [], errors = [], onSubmit, isLoading = false }) => {
   return (
     <div className="w-full space-y-6">
       {errors.length > 0 && (
@@ -65,3 +65,5 @@ export default function ImportDataForm({ data = [], errors = [], onSubmit, isLoa
     </div>
   )
 }
+
+export default ImportDataForm
