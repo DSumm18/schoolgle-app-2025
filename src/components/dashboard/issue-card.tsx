@@ -31,16 +31,16 @@ export function IssueCard({
   onClick
 }: IssueProps) {
   const statusVariant = {
-    "open": "warning",
-    "in-progress": "info",
-    "pending-review": "info",
-    "resolved": "success",
+    "open": "secondary",
+    "in-progress": "default",
+    "pending-review": "default",
+    "resolved": "default",
     "closed": "default"
   } as const
 
   const priorityVariant = {
-    "low": "success",
-    "medium": "warning",
+    "low": "default",
+    "medium": "secondary",
     "high": "destructive",
     "urgent": "destructive"
   } as const
