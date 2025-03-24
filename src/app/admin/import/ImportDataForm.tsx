@@ -5,14 +5,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ImportService } from '@/lib/services/import-service';
 import { ImportPreviewData } from '@/types/school-data';
+import { BrandingPreview } from '@/types/branding';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface ImportDataFormProps {
   type: 'trust' | 'school';
+  branding?: BrandingPreview;
 }
 
-export function ImportDataForm({ type }: ImportDataFormProps) {
+export function ImportDataForm({ type, branding }: ImportDataFormProps) {
   const [file, setFile] = useState<File>();
   const [preview, setPreview] = useState<ImportPreviewData>();
   const [error, setError] = useState<string>();
@@ -54,10 +56,20 @@ export function ImportDataForm({ type }: ImportDataFormProps) {
 
     try {
       setIsLoading(true);
-      // Here you would typically call your API to save the data
-      // For now, we'll just simulate success
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setImportSuccess(true);
+      const result = await importService.importData(preview, type, branding ? {
+        primaryColor: branding.colors.primary,
+        secondaryColor: branding.colors.secondary,
+        accentColor: branding.colors.accent,
+        logoUrl: branding.logo ? URL.createObjectURL(branding.logo) : undefined,
+        favicon: branding.favicon ? URL.createObjectURL(branding.favicon) : undefined,
+        fontFamily: branding.font,
+      } : undefined);
+
+      if (result.success) {
+        setImportSuccess(true);
+      } else {
+        setError(result.message);
+      }
     } catch (err) {
       setError('Failed to import data');
       console.error(err);
