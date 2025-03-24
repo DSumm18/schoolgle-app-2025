@@ -1,5 +1,12 @@
+import Papa from 'papaparse';
+
 export interface ImportData {
   [key: string]: any;
+}
+
+export interface PreviewResult {
+  data: ImportData[];
+  errors?: string[];
 }
 
 export interface BrandingOptions {
@@ -20,6 +27,59 @@ export class ImportService {
     return ImportService.instance;
   }
 
+  async previewImport(file: File, type: string): Promise<PreviewResult> {
+    return new Promise((resolve, reject) => {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          const errors = this.validateData(results.data, type);
+          resolve({
+            data: results.data,
+            errors: errors.length > 0 ? errors : undefined
+          });
+        },
+        error: (error) => {
+          reject(new Error(`Failed to parse CSV file: ${error.message}`));
+        }
+      });
+    });
+  }
+
+  private validateData(data: ImportData[], type: string): string[] {
+    const errors: string[] = [];
+    const requiredFields = this.getRequiredFields(type);
+
+    if (!Array.isArray(data) || data.length === 0) {
+      errors.push('No data found in the file');
+      return errors;
+    }
+
+    // Check if all required fields are present
+    const missingFields = requiredFields.filter(
+      field => !Object.keys(data[0]).includes(field)
+    );
+
+    if (missingFields.length > 0) {
+      errors.push(`Missing required fields: ${missingFields.join(', ')}`);
+    }
+
+    return errors;
+  }
+
+  private getRequiredFields(type: string): string[] {
+    switch (type.toLowerCase()) {
+      case 'students':
+        return ['firstName', 'lastName', 'email', 'yearGroup'];
+      case 'staff':
+        return ['firstName', 'lastName', 'email', 'department'];
+      case 'classes':
+        return ['name', 'subject', 'teacher'];
+      default:
+        return [];
+    }
+  }
+
   async importData(
     data: ImportData[],
     type: string,
@@ -27,8 +87,9 @@ export class ImportService {
   ): Promise<{ success: boolean; message: string }> {
     try {
       // Validate data
-      if (!Array.isArray(data) || data.length === 0) {
-        throw new Error('Invalid data format');
+      const errors = this.validateData(data, type);
+      if (errors.length > 0) {
+        throw new Error(errors.join(', '));
       }
 
       // Process data based on type
