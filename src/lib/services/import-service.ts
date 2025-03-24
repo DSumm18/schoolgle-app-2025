@@ -4,9 +4,15 @@ export interface ImportData {
   [key: string]: any;
 }
 
+export interface ImportError {
+  row: number;
+  field: string;
+  message: string;
+}
+
 export interface PreviewResult {
   data: ImportData[];
-  errors?: string[];
+  errors?: ImportError[];
 }
 
 export interface BrandingOptions {
@@ -46,12 +52,16 @@ export class ImportService {
     });
   }
 
-  private validateData(data: ImportData[], type: string): string[] {
-    const errors: string[] = [];
+  private validateData(data: ImportData[], type: string): ImportError[] {
+    const errors: ImportError[] = [];
     const requiredFields = this.getRequiredFields(type);
 
     if (!Array.isArray(data) || data.length === 0) {
-      errors.push('No data found in the file');
+      errors.push({
+        row: 0,
+        field: 'file',
+        message: 'No data found in the file'
+      });
       return errors;
     }
 
@@ -61,8 +71,27 @@ export class ImportService {
     );
 
     if (missingFields.length > 0) {
-      errors.push(`Missing required fields: ${missingFields.join(', ')}`);
+      missingFields.forEach(field => {
+        errors.push({
+          row: 0,
+          field,
+          message: `Missing required field: ${field}`
+        });
+      });
     }
+
+    // Validate each row
+    data.forEach((row, index) => {
+      requiredFields.forEach(field => {
+        if (!row[field] || row[field].trim() === '') {
+          errors.push({
+            row: index + 1,
+            field,
+            message: `Missing value for ${field}`
+          });
+        }
+      });
+    });
 
     return errors;
   }
@@ -89,7 +118,7 @@ export class ImportService {
       // Validate data
       const errors = this.validateData(data, type);
       if (errors.length > 0) {
-        throw new Error(errors.join(', '));
+        throw new Error(errors.map(e => e.message).join(', '));
       }
 
       // Process data based on type
