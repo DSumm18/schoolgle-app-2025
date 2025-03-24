@@ -1,165 +1,163 @@
-import Papa from 'papaparse';
+import Papa, { ParseResult } from 'papaparse'
+import type { ImportError, ImportPreviewData, PreviewResult, BrandingOptions } from '../types/import-types'
 
-export interface ImportData {
-  [key: string]: any;
-}
+export type { ImportError, ImportPreviewData, PreviewResult, BrandingOptions }
 
-export interface ImportError {
-  row: number;
-  field: string;
-  message: string;
-}
-
-export interface PreviewResult {
-  data: ImportData[];
-  errors?: ImportError[];
-}
-
-export interface BrandingOptions {
-  primaryColor: string;
-  secondaryColor: string;
-  accentColor: string;
+export interface ImportResult {
+  success: boolean
+  message: string
+  errors?: ImportError[]
 }
 
 export class ImportService {
-  private static instance: ImportService;
+  private static instance: ImportService
+  private requiredFields: { [key: string]: string[] } = {
+    school: ['name', 'address', 'postcode', 'phone', 'email'],
+    trust: ['name', 'registration_number', 'address', 'postcode']
+  }
 
   private constructor() {}
 
   public static getInstance(): ImportService {
     if (!ImportService.instance) {
-      ImportService.instance = new ImportService();
+      ImportService.instance = new ImportService()
     }
-    return ImportService.instance;
+    return ImportService.instance
   }
 
-  async previewImport(file: File, type: string): Promise<PreviewResult> {
+  public async previewImport(file: File, type: 'school' | 'trust'): Promise<PreviewResult> {
     return new Promise((resolve, reject) => {
       Papa.parse(file, {
         header: true,
         skipEmptyLines: true,
-        complete: (results) => {
-          const errors = this.validateData(results.data, type);
-          resolve({
-            data: results.data,
-            errors: errors.length > 0 ? errors : undefined
-          });
+        complete: (results: ParseResult<ImportPreviewData>) => {
+          const errors: ImportError[] = []
+          const data = results.data
+
+          // Check for required fields
+          const missingFields = this.validateRequiredFields(results.meta.fields || [], type)
+          if (missingFields.length > 0) {
+            errors.push({
+              row: 0,
+              field: 'headers',
+              message: `Missing required fields: ${missingFields.join(', ')}`
+            })
+          }
+
+          // Validate each row
+          data.forEach((row, index) => {
+            const rowErrors = this.validateData(row, type, index + 1)
+            errors.push(...rowErrors)
+          })
+
+          resolve({ data, errors })
         },
-        error: (error) => {
-          reject(new Error(`Failed to parse CSV file: ${error.message}`));
+        error: (error: Error) => {
+          reject(new Error(`Failed to parse CSV file: ${error.message}`))
         }
-      });
-    });
+      })
+    })
   }
 
-  private validateData(data: ImportData[], type: string): ImportError[] {
-    const errors: ImportError[] = [];
-    const requiredFields = this.getRequiredFields(type);
-
-    if (!Array.isArray(data) || data.length === 0) {
-      errors.push({
-        row: 0,
-        field: 'file',
-        message: 'No data found in the file'
-      });
-      return errors;
-    }
-
-    // Check if all required fields are present
-    const missingFields = requiredFields.filter(
-      field => !Object.keys(data[0]).includes(field)
-    );
-
-    if (missingFields.length > 0) {
-      missingFields.forEach(field => {
-        errors.push({
-          row: 0,
-          field,
-          message: `Missing required field: ${field}`
-        });
-      });
-    }
-
-    // Validate each row
-    data.forEach((row, index) => {
-      requiredFields.forEach(field => {
-        if (!row[field] || row[field].trim() === '') {
-          errors.push({
-            row: index + 1,
-            field,
-            message: `Missing value for ${field}`
-          });
-        }
-      });
-    });
-
-    return errors;
-  }
-
-  private getRequiredFields(type: string): string[] {
-    switch (type.toLowerCase()) {
-      case 'students':
-        return ['firstName', 'lastName', 'email', 'yearGroup'];
-      case 'staff':
-        return ['firstName', 'lastName', 'email', 'department'];
-      case 'classes':
-        return ['name', 'subject', 'teacher'];
-      default:
-        return [];
-    }
-  }
-
-  async importData(
-    data: ImportData[],
-    type: string,
-    branding?: BrandingOptions
-  ): Promise<{ success: boolean; message: string }> {
+  public async importData(data: ImportPreviewData[], type: 'school' | 'trust', branding?: BrandingOptions): Promise<ImportResult> {
     try {
-      // Validate data
-      const errors = this.validateData(data, type);
+      // Validate the data again before importing
+      const errors: ImportError[] = []
+      data.forEach((row, index) => {
+        const rowErrors = this.validateData(row, type, index + 1)
+        errors.push(...rowErrors)
+      })
+
       if (errors.length > 0) {
-        throw new Error(errors.map(e => e.message).join(', '));
+        return {
+          success: false,
+          message: 'Validation failed',
+          errors
+        }
       }
 
-      // Process data based on type
-      switch (type.toLowerCase()) {
-        case 'students':
-          await this.importStudents(data, branding);
-          break;
-        case 'staff':
-          await this.importStaff(data, branding);
-          break;
-        case 'classes':
-          await this.importClasses(data, branding);
-          break;
-        default:
-          throw new Error('Unsupported import type');
-      }
-
+      // TODO: Implement actual database import logic here
+      // For now, just simulate a successful import
       return {
         success: true,
         message: `Successfully imported ${data.length} ${type} records`
-      };
+      }
     } catch (error) {
       return {
         success: false,
-        message: error instanceof Error ? error.message : 'Unknown error occurred'
-      };
+        message: `Failed to import data: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        errors: [{
+          row: 0,
+          field: 'system',
+          message: 'System error during import'
+        }]
+      }
     }
   }
 
-  private async importStudents(data: ImportData[], branding?: BrandingOptions): Promise<void> {
-    // Implementation for student import
-    console.log('Importing students with branding:', branding);
+  private validateRequiredFields(fields: string[], type: 'school' | 'trust'): string[] {
+    const required = this.requiredFields[type]
+    return required.filter(field => !fields.includes(field))
   }
 
-  private async importStaff(data: ImportData[], branding?: BrandingOptions): Promise<void> {
-    // Implementation for staff import
-    console.log('Importing staff with branding:', branding);
+  private validateData(row: ImportPreviewData, type: 'school' | 'trust', rowNumber: number): ImportError[] {
+    const errors: ImportError[] = []
+    const required = this.requiredFields[type]
+
+    required.forEach(field => {
+      const value = row[field]
+      if (!value || String(value).trim() === '') {
+        errors.push({
+          row: rowNumber,
+          field,
+          message: `${field} is required`
+        })
+      }
+    })
+
+    // Additional validation rules
+    if (type === 'school') {
+      if (row.email && !this.isValidEmail(String(row.email))) {
+        errors.push({
+          row: rowNumber,
+          field: 'email',
+          message: 'Invalid email format'
+        })
+      }
+      if (row.phone && !this.isValidPhone(String(row.phone))) {
+        errors.push({
+          row: rowNumber,
+          field: 'phone',
+          message: 'Invalid phone number format'
+        })
+      }
+    }
+
+    if (type === 'trust' && row.registration_number) {
+      if (!this.isValidRegistrationNumber(String(row.registration_number))) {
+        errors.push({
+          row: rowNumber,
+          field: 'registration_number',
+          message: 'Invalid registration number format'
+        })
+      }
+    }
+
+    return errors
   }
 
-  private async importClasses(data: ImportData[], branding?: BrandingOptions): Promise<void> {
-    // Implementation for classes import
-    console.log('Importing classes with branding:', branding);
+  private isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
+  private isValidPhone(phone: string): boolean {
+    const phoneRegex = /^[\d\s\-+()]{10,}$/
+    return phoneRegex.test(phone)
+  }
+
+  private isValidRegistrationNumber(number: string): boolean {
+    const regNumberRegex = /^\d{7}$/
+    return regNumberRegex.test(number)
   }
 }
