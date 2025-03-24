@@ -2,23 +2,29 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { WeatherService, WeatherData } from '@/lib/services/weather-service';
+
+interface WeatherData {
+  current_weather: {
+    temperature: number;
+    weathercode: number;
+    windspeed: number;
+  };
+}
 
 export function WeatherWidget() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchWeather = async () => {
       try {
-        setLoading(true);
-        const weatherService = WeatherService.getInstance();
-        const data = await weatherService.getWeatherData();
+        // Leeds coordinates
+        const response = await fetch(
+          'https://api.open-meteo.com/v1/forecast?latitude=53.8008&longitude=-1.5491&current_weather=true'
+        );
+        const data = await response.json();
         setWeather(data);
-        setError(null);
       } catch (err) {
-        setError('Failed to load weather data');
         console.error('Weather fetch error:', err);
       } finally {
         setLoading(false);
@@ -26,10 +32,32 @@ export function WeatherWidget() {
     };
 
     fetchWeather();
-    // Refresh weather data every 30 minutes
-    const interval = setInterval(fetchWeather, 30 * 60 * 1000);
+    // Refresh every hour
+    const interval = setInterval(fetchWeather, 60 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
+
+  const getWeatherDescription = (code: number): string => {
+    const weatherCodes: { [key: number]: string } = {
+      0: "Clear sky",
+      1: "Mainly clear",
+      2: "Partly cloudy",
+      3: "Overcast",
+      45: "Foggy",
+      51: "Light drizzle",
+      53: "Moderate drizzle",
+      61: "Slight rain",
+      63: "Moderate rain",
+      65: "Heavy rain",
+      71: "Snow",
+      77: "Snow grains",
+      80: "Light showers",
+      81: "Moderate showers",
+      82: "Heavy showers",
+      95: "Thunderstorm"
+    };
+    return weatherCodes[code] || "Unknown";
+  };
 
   if (loading) {
     return (
@@ -46,36 +74,25 @@ export function WeatherWidget() {
     );
   }
 
-  if (error || !weather) {
-    return (
-      <Card className="h-full">
-        <CardHeader>
-          <CardTitle className="text-sm font-medium">Weather</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center text-muted-foreground">
-            Unable to load weather data
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const weatherService = WeatherService.getInstance();
-  const isDay = new Date().getHours() > 6 && new Date().getHours() < 20;
+  if (!weather) return null;
 
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle className="text-sm font-medium">Weather - {weather.location.name}</CardTitle>
+        <CardTitle className="text-sm font-medium">Weather - Leeds</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-2xl font-bold">{weather.current.temperature}°C</h3>
+              <h3 className="text-2xl font-bold">
+                {Math.round(weather.current_weather.temperature)}°C
+              </h3>
               <p className="text-sm text-muted-foreground">
-                {weatherService.getWeatherDescription(weather.current.weatherCode)}
+                {getWeatherDescription(weather.current_weather.weathercode)}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Wind: {Math.round(weather.current_weather.windspeed)} km/h
               </p>
             </div>
             <div className="text-blue-500">
@@ -89,39 +106,10 @@ export function WeatherWidget() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className={weatherService.getWeatherIcon(weather.current.weatherCode, isDay)}
               >
-                {/* Icon paths will be added based on the weather type */}
-                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+                <circle cx="12" cy="12" r="5" />
+                <path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
               </svg>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <div>
-              <span className="text-muted-foreground">Wind:</span>{' '}
-              {weather.current.windSpeed}km/h
-            </div>
-            <div>
-              <span className="text-muted-foreground">Direction:</span>{' '}
-              {weather.current.windDirection}°
-            </div>
-          </div>
-          <div className="mt-4">
-            <h4 className="text-sm font-medium mb-2">7-Day Forecast</h4>
-            <div className="flex justify-between">
-              {weather.daily.time.slice(0, 4).map((date, index) => (
-                <div key={date} className="text-center">
-                  <div className="text-xs text-muted-foreground">
-                    {new Date(date).toLocaleDateString('en-GB', { weekday: 'short' })}
-                  </div>
-                  <div className="text-sm font-medium">
-                    {weather.daily.temperature_2m_max[index]}°
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {weather.daily.temperature_2m_min[index]}°
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </div>
