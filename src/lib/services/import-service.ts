@@ -9,6 +9,17 @@ export interface BrandingOptions {
 }
 
 export class ImportService {
+  private static instance: ImportService;
+
+  private constructor() {}
+
+  public static getInstance(): ImportService {
+    if (!ImportService.instance) {
+      ImportService.instance = new ImportService();
+    }
+    return ImportService.instance;
+  }
+
   async importData(
     data: ImportData[],
     type: string,
