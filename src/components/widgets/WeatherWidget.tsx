@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MetOfficeWeatherService, MetOfficeWeatherData } from '@/lib/services/met-office-weather';
+import { WeatherService, WeatherData } from '@/lib/services/weather-service';
 
 export function WeatherWidget() {
-  const [weather, setWeather] = useState<MetOfficeWeatherData | null>(null);
+  const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -13,9 +13,8 @@ export function WeatherWidget() {
     const fetchWeather = async () => {
       try {
         setLoading(true);
-        // London coordinates (you can make this configurable)
-        const weatherService = MetOfficeWeatherService.getInstance();
-        const data = await weatherService.getWeatherData(51.5074, -0.1278);
+        const weatherService = WeatherService.getInstance();
+        const data = await weatherService.getWeatherData();
         setWeather(data);
         setError(null);
       } catch (err) {
@@ -32,44 +31,6 @@ export function WeatherWidget() {
     return () => clearInterval(interval);
   }, []);
 
-  const getWeatherIcon = (weatherCode: number) => {
-    // Map Met Office weather codes to appropriate icons
-    const iconMap: { [key: number]: string } = {
-      0: "moon", // Clear night
-      1: "sun", // Sunny day
-      2: "cloud-sun", // Partly cloudy (day)
-      3: "cloud-moon", // Partly cloudy (night)
-      5: "cloud-fog", // Mist
-      6: "cloud-fog", // Fog
-      7: "cloud", // Cloudy
-      8: "cloud", // Overcast
-      9: "cloud-drizzle", // Light rain shower
-      10: "cloud-drizzle", // Light rain shower
-      11: "cloud-drizzle", // Drizzle
-      12: "cloud-rain", // Light rain
-      13: "cloud-rain", // Heavy rain shower
-      14: "cloud-rain", // Heavy rain shower
-      15: "cloud-rain", // Heavy rain
-      16: "cloud-snow", // Sleet shower
-      17: "cloud-snow", // Sleet shower
-      18: "cloud-snow", // Sleet
-      19: "cloud-hail", // Hail shower
-      20: "cloud-hail", // Hail shower
-      21: "cloud-hail", // Hail
-      22: "cloud-snow", // Light snow shower
-      23: "cloud-snow", // Light snow shower
-      24: "cloud-snow", // Light snow
-      25: "cloud-snow", // Heavy snow shower
-      26: "cloud-snow", // Heavy snow shower
-      27: "cloud-snow", // Heavy snow
-      28: "cloud-lightning", // Thunder shower
-      29: "cloud-lightning", // Thunder shower
-      30: "cloud-lightning", // Thunder
-    };
-
-    return iconMap[weatherCode] || "cloud-question";
-  };
-
   if (loading) {
     return (
       <Card className="h-full">
@@ -85,7 +46,7 @@ export function WeatherWidget() {
     );
   }
 
-  if (error) {
+  if (error || !weather) {
     return (
       <Card className="h-full">
         <CardHeader>
@@ -100,7 +61,8 @@ export function WeatherWidget() {
     );
   }
 
-  if (!weather) return null;
+  const weatherService = WeatherService.getInstance();
+  const isDay = new Date().getHours() > 6 && new Date().getHours() < 20;
 
   return (
     <Card className="h-full">
@@ -112,7 +74,9 @@ export function WeatherWidget() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-2xl font-bold">{weather.current.temperature}°C</h3>
-              <p className="text-sm text-muted-foreground">{weather.current.weatherType}</p>
+              <p className="text-sm text-muted-foreground">
+                {weatherService.getWeatherDescription(weather.current.weatherCode)}
+              </p>
             </div>
             <div className="text-blue-500">
               <svg
@@ -125,7 +89,7 @@ export function WeatherWidget() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className={getWeatherIcon(weather.current.weatherCode)}
+                className={weatherService.getWeatherIcon(weather.current.weatherCode, isDay)}
               >
                 {/* Icon paths will be added based on the weather type */}
                 <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
@@ -135,22 +99,27 @@ export function WeatherWidget() {
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div>
               <span className="text-muted-foreground">Wind:</span>{' '}
-              {weather.current.windSpeed}mph {weather.current.windDirection}
+              {weather.current.windSpeed}km/h
             </div>
             <div>
-              <span className="text-muted-foreground">Humidity:</span>{' '}
-              {weather.current.humidity}%
+              <span className="text-muted-foreground">Direction:</span>{' '}
+              {weather.current.windDirection}°
             </div>
           </div>
           <div className="mt-4">
-            <h4 className="text-sm font-medium mb-2">Forecast</h4>
+            <h4 className="text-sm font-medium mb-2">7-Day Forecast</h4>
             <div className="flex justify-between">
-              {weather.forecast.slice(0, 4).map((day, index) => (
-                <div key={index} className="text-center">
+              {weather.daily.time.slice(0, 4).map((date, index) => (
+                <div key={date} className="text-center">
                   <div className="text-xs text-muted-foreground">
-                    {new Date(day.date).toLocaleDateString('en-GB', { weekday: 'short' })}
+                    {new Date(date).toLocaleDateString('en-GB', { weekday: 'short' })}
                   </div>
-                  <div className="text-sm font-medium">{day.temperature}°C</div>
+                  <div className="text-sm font-medium">
+                    {weather.daily.temperature_2m_max[index]}°
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {weather.daily.temperature_2m_min[index]}°
+                  </div>
                 </div>
               ))}
             </div>
