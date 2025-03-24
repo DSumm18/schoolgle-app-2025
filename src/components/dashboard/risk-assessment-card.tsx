@@ -30,15 +30,15 @@ export function RiskAssessmentCard({
 }: RiskAssessmentProps) {
   const statusVariant = {
     "draft": "default",
-    "submitted": "info",
-    "approved": "success",
+    "submitted": "default",
+    "approved": "default",
     "rejected": "destructive",
-    "requires-revision": "warning"
+    "requires-revision": "secondary"
   } as const
 
   const riskVariant = {
-    "low": "success",
-    "medium": "warning",
+    "low": "default",
+    "medium": "secondary",
     "high": "destructive",
     "critical": "destructive"
   } as const
