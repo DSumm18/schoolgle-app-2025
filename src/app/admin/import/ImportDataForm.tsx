@@ -1,186 +1,67 @@
-'use client';
-
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ImportService } from '@/lib/services/import-service';
-import { ImportPreviewData } from '@/types/school-data';
-import { BrandingPreview } from '@/types/branding';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import React from 'react'
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
+import { ImportPreviewData, ImportError } from '@/lib/services/import-service'
 
 interface ImportDataFormProps {
-  type: 'trust' | 'school';
-  branding?: BrandingPreview;
+  data: ImportPreviewData[]
+  errors?: ImportError[]
+  onSubmit?: (data: ImportPreviewData[]) => void
+  isLoading?: boolean
 }
 
-export function ImportDataForm({ type, branding }: ImportDataFormProps) {
-  const [file, setFile] = useState<File>();
-  const [preview, setPreview] = useState<ImportPreviewData>();
-  const [error, setError] = useState<string>();
-  const [isLoading, setIsLoading] = useState(false);
-  const [importSuccess, setImportSuccess] = useState(false);
-
-  const importService = ImportService.getInstance();
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (!selectedFile) return;
-
-    if (!selectedFile.name.toLowerCase().endsWith('.csv')) {
-      setError('Please upload a CSV file');
-      return;
-    }
-
-    setFile(selectedFile);
-    setError(undefined);
-    setImportSuccess(false);
-
-    try {
-      setIsLoading(true);
-      const previewData = await importService.previewImport(selectedFile, type);
-      setPreview(previewData);
-      if (previewData.errors?.length) {
-        setError('There are validation errors in the CSV file');
-      }
-    } catch (err) {
-      setError('Failed to parse CSV file');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleImport = async () => {
-    if (!file || !preview || preview.errors?.length) return;
-
-    try {
-      setIsLoading(true);
-      const result = await importService.importData(preview, type, branding ? {
-        primaryColor: branding.colors.primary,
-        secondaryColor: branding.colors.secondary,
-        accentColor: branding.colors.accent,
-        logoUrl: branding.logo ? URL.createObjectURL(branding.logo) : undefined,
-        favicon: branding.favicon ? URL.createObjectURL(branding.favicon) : undefined,
-        fontFamily: branding.font,
-      } : undefined);
-
-      if (result.success) {
-        setImportSuccess(true);
-      } else {
-        setError(result.message);
-      }
-    } catch (err) {
-      setError('Failed to import data');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+export default function ImportDataForm({ data = [], errors = [], onSubmit, isLoading = false }: ImportDataFormProps) {
   return (
-    <div className="space-y-6">
-      <div>
-        <Input
-          type="file"
-          accept=".csv"
-          onChange={handleFileChange}
-          disabled={isLoading}
-        />
-        <p className="text-sm text-gray-500 mt-2">
-          Upload a CSV file containing {type} data
-        </p>
-      </div>
-
-      {error && (
-        <Alert variant="destructive">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      {importSuccess && (
-        <Alert className="bg-green-50 border-green-200">
-          <AlertTitle className="text-green-800">Success</AlertTitle>
-          <AlertDescription className="text-green-700">
-            Data imported successfully
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {preview && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Preview</h3>
-          
-          {preview.errors && preview.errors.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="font-medium text-red-600">Validation Errors</h4>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Row</TableHead>
-                    <TableHead>Field</TableHead>
-                    <TableHead>Error</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {preview.errors.map((error, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{error.row}</TableCell>
-                      <TableCell>{error.field}</TableCell>
-                      <TableCell>{error.message}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-
-          {!preview.errors?.length && (
-            <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Field</TableHead>
-                    <TableHead>Value</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {type === 'trust' && preview.trust && (
-                    Object.entries(preview.trust).map(([key, value]) => (
-                      <TableRow key={key}>
-                        <TableCell>{key}</TableCell>
-                        <TableCell>{String(value)}</TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                  {type === 'school' && preview.schools && (
-                    Object.entries(preview.schools[0] || {}).map(([key, value]) => (
-                      <TableRow key={key}>
-                        <TableCell>{key}</TableCell>
-                        <TableCell>{String(value)}</TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-
-              {type === 'school' && preview.schools && preview.schools.length > 1 && (
-                <p className="text-sm text-gray-500">
-                  Showing preview of first school. Total schools: {preview.schools.length}
-                </p>
-              )}
-
-              <Button
-                onClick={handleImport}
-                disabled={isLoading || preview.errors?.length > 0}
-              >
-                {isLoading ? 'Importing...' : 'Confirm Import'}
-              </Button>
-            </>
-          )}
+    <div className="w-full space-y-6">
+      {errors.length > 0 && (
+        <div className="bg-destructive/10 text-destructive p-4 rounded-md">
+          <h3 className="font-semibold mb-2">Validation Errors:</h3>
+          <ul className="list-disc pl-4">
+            {errors.map((error, index) => (
+              <li key={index}>
+                Row {error.row}: {error.message} (Field: {error.field})
+              </li>
+            ))}
+          </ul>
         </div>
       )}
+
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Preview Data</h2>
+        
+        {data.length > 0 ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {Object.keys(data[0]).map((header) => (
+                  <TableHead key={header}>{header}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.map((row, index) => (
+                <TableRow key={index}>
+                  {Object.entries(row).map(([key, value]) => (
+                    <TableCell key={key}>{String(value)}</TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <p className="text-muted-foreground">No data to preview</p>
+        )}
+      </div>
+      
+      <div className="flex justify-end">
+        <Button
+          onClick={() => onSubmit?.(data)}
+          disabled={!data.length || errors.length > 0 || isLoading}
+          variant="default"
+        >
+          {isLoading ? 'Importing...' : 'Import Data'}
+        </Button>
+      </div>
     </div>
-  );
+  )
 }
