@@ -27,15 +27,15 @@ export function ActivityCard({
   onClick
 }: ActivityProps) {
   const statusVariant = {
-    pending: "warning",
-    approved: "info",
-    completed: "success",
+    pending: "secondary",
+    approved: "default",
+    completed: "default",
     cancelled: "destructive"
   } as const
 
   const riskVariant = {
-    low: "success",
-    medium: "warning",
+    low: "default",
+    medium: "secondary",
     high: "destructive"
   } as const
 
