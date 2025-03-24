@@ -1,131 +1,138 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ImportDataForm } from './ImportDataForm';
-import { BrandingConfig } from './BrandingConfig';
-import { BrandingPreview } from '@/types/branding';
+import React, { useState, useRef } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ImportService } from '@/lib/services/import-service'
+import type { ImportPreviewData, ImportError } from '@/lib/types/import-types'
+import { useToast } from '@/components/ui/use-toast'
+import ImportDataForm from './ImportDataForm'
 
 export default function ImportPage() {
-  const [brandingPreview, setBrandingPreview] = useState<BrandingPreview>();
-  const [activeTab, setActiveTab] = useState<'trust' | 'school'>('trust');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [importType, setImportType] = useState<'school' | 'trust'>('school')
+  const [previewData, setPreviewData] = useState<ImportPreviewData[]>([])
+  const [errors, setErrors] = useState<ImportError[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const { toast } = useToast()
 
-  const handleBrandingChange = (preview: BrandingPreview) => {
-    setBrandingPreview(preview);
-  };
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setSelectedFile(file)
+    try {
+      const importService = ImportService.getInstance()
+      const result = await importService.previewImport(file, importType)
+      setPreviewData(result.data)
+      setErrors(result.errors)
+    } catch (error) {
+      console.error('Error previewing file:', error)
+      setErrors([{
+        row: 0,
+        field: 'file',
+        message: 'Failed to parse file. Please ensure it is a valid CSV file.'
+      }])
+      setPreviewData([])
+    }
+  }
+
+  const handleImportTypeChange = (type: 'school' | 'trust') => {
+    setImportType(type)
+    setSelectedFile(null)
+    setPreviewData([])
+    setErrors([])
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const handleSubmit = async (data: ImportPreviewData[]) => {
+    try {
+      setIsLoading(true)
+      const importService = ImportService.getInstance()
+      const result = await importService.importData(data, importType)
+      
+      if (result.success) {
+        toast({
+          title: 'Success',
+          description: result.message,
+          variant: 'default'
+        })
+        // Reset form
+        handleImportTypeChange(importType)
+      } else {
+        toast({
+          title: 'Error',
+          description: result.message,
+          variant: 'destructive'
+        })
+        if (result.errors) {
+          setErrors(result.errors)
+        }
+      }
+    } catch (error) {
+      console.error('Error importing data:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to import data. Please try again.',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-6">Data Import & Branding</h1>
-      
-      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'trust' | 'school')} className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="trust">Trust Setup</TabsTrigger>
-          <TabsTrigger value="school">School Setup</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="trust">
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Import Trust Data</CardTitle>
-                <CardDescription>
-                  Upload a CSV file containing trust information. The file should include trust ID,
-                  name, address, contact details, and other relevant information.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ImportDataForm type="trust" />
-              </CardContent>
-            </Card>
-
-            <BrandingConfig 
-              type="trust"
-              onBrandingChange={handleBrandingChange}
-            />
+    <div className="container mx-auto py-8 space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Import Data</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex gap-4">
+            <Button
+              variant={importType === 'school' ? 'default' : 'outline'}
+              onClick={() => handleImportTypeChange('school')}
+            >
+              School Import
+            </Button>
+            <Button
+              variant={importType === 'trust' ? 'default' : 'outline'}
+              onClick={() => handleImportTypeChange('trust')}
+            >
+              Trust Import
+            </Button>
           </div>
-        </TabsContent>
-        
-        <TabsContent value="school">
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Import School Data</CardTitle>
-                <CardDescription>
-                  Upload a CSV file containing school information. The file should include school ID,
-                  trust ID, name, address, contact details, and pupil numbers.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ImportDataForm type="school" />
-              </CardContent>
-            </Card>
 
-            <BrandingConfig 
-              type="school"
-              onBrandingChange={handleBrandingChange}
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <input
+              type="file"
+              accept=".csv"
+              onChange={handleFileChange}
+              ref={fileInputRef}
+              className="cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
             />
+            <p className="text-sm text-muted-foreground">
+              Upload a CSV file containing {importType} data
+            </p>
           </div>
-        </TabsContent>
-      </Tabs>
+        </CardContent>
+      </Card>
 
-      {brandingPreview && (
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Live Preview</CardTitle>
-            <CardDescription>
-              This is how your {activeTab === 'trust' ? 'trust' : 'school'} branding will look
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-lg overflow-hidden border">
-              <div
-                className="p-4"
-                style={{
-                  backgroundColor: brandingPreview.colors.primary,
-                  color: '#ffffff',
-                  fontFamily: brandingPreview.font || 'inherit',
-                }}
-              >
-                <div className="flex items-center gap-4">
-                  {brandingPreview.logo && (
-                    <img
-                      src={URL.createObjectURL(brandingPreview.logo)}
-                      alt="Logo"
-                      className="w-12 h-12 object-contain"
-                    />
-                  )}
-                  <h2 className="text-xl font-bold">
-                    {activeTab === 'trust' ? 'Your Trust Name' : 'Your School Name'}
-                  </h2>
-                </div>
-              </div>
-              
-              <div className="p-6 bg-white">
-                <div
-                  className="p-4 rounded-md mb-4"
-                  style={{
-                    backgroundColor: brandingPreview.colors.secondary,
-                    color: '#ffffff',
-                  }}
-                >
-                  Secondary Colour Section
-                </div>
-                
-                <button
-                  className="px-4 py-2 rounded-md text-white"
-                  style={{
-                    backgroundColor: brandingPreview.colors.accent,
-                  }}
-                >
-                  Accent Button
-                </button>
-              </div>
-            </div>
+      {(previewData.length > 0 || errors.length > 0) && (
+        <Card>
+          <CardContent className="pt-6">
+            <ImportDataForm
+              data={previewData}
+              errors={errors}
+              onSubmit={handleSubmit}
+              isLoading={isLoading}
+            />
           </CardContent>
         </Card>
       )}
     </div>
-  );
+  )
 }
