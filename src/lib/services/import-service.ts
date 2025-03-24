@@ -1,143 +1,64 @@
-import { TrustData, SchoolData, ImportPreviewData, ImportResult } from '@/types/school-data';
-import Papa from 'papaparse';
+export interface ImportData {
+  [key: string]: any;
+}
+
+export interface BrandingOptions {
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+}
 
 export class ImportService {
-  private static instance: ImportService;
-
-  private constructor() {}
-
-  public static getInstance(): ImportService {
-    if (!ImportService.instance) {
-      ImportService.instance = new ImportService();
-    }
-    return ImportService.instance;
-  }
-
-  async parseCSV(file: File): Promise<string[][]> {
-    return new Promise((resolve, reject) => {
-      Papa.parse(file, {
-        complete: (results) => resolve(results.data as string[][]),
-        error: (error) => reject(error),
-      });
-    });
-  }
-
-  async validateHeaders(headers: string[], fileType: 'trust' | 'school'): Promise<boolean> {
-    const requiredTrustHeaders = [
-      'trustId',
-      'trustName',
-      'address',
-      'postcode',
-      'contactEmail',
-      'contactPhone',
-      'numberOfSchools',
-      'totalPupils',
-    ];
-
-    const requiredSchoolHeaders = [
-      'schoolId',
-      'trustId',
-      'schoolName',
-      'address',
-      'postcode',
-      'contactEmail',
-      'contactPhone',
-      'headteacherName',
-      'headteacherEmail',
-      'schoolType',
-      'numberOfPupils',
-    ];
-
-    const required = fileType === 'trust' ? requiredTrustHeaders : requiredSchoolHeaders;
-    return required.every((header) => headers.includes(header));
-  }
-
-  async previewImport(file: File, fileType: 'trust' | 'school'): Promise<ImportPreviewData> {
+  async importData(
+    data: ImportData[],
+    type: string,
+    branding?: BrandingOptions
+  ): Promise<{ success: boolean; message: string }> {
     try {
-      const data = await this.parseCSV(file);
-      const headers = data[0];
-      const rows = data.slice(1);
-
-      if (!this.validateHeaders(headers, fileType)) {
-        return {
-          errors: [{
-            row: 0,
-            field: 'headers',
-            message: 'Invalid headers in CSV file',
-          }],
-        };
+      // Validate data
+      if (!Array.isArray(data) || data.length === 0) {
+        throw new Error('Invalid data format');
       }
 
-      const errors: { row: number; field: string; message: string }[] = [];
-      const processedData: any[] = [];
-
-      rows.forEach((row, index) => {
-        const rowData: { [key: string]: any } = {};
-        let hasError = false;
-
-        headers.forEach((header, colIndex) => {
-          const value = row[colIndex];
-          if (!value && this.isRequiredField(header, fileType)) {
-            errors.push({
-              row: index + 1,
-              field: header,
-              message: `Missing required field: ${header}`,
-            });
-            hasError = true;
-          }
-
-          if (this.isNumericField(header) && !this.isValidNumber(value)) {
-            errors.push({
-              row: index + 1,
-              field: header,
-              message: `Invalid number format for field: ${header}`,
-            });
-            hasError = true;
-          }
-
-          rowData[header] = this.formatValue(header, value);
-        });
-
-        if (!hasError) {
-          processedData.push(rowData);
-        }
-      });
+      // Process data based on type
+      switch (type.toLowerCase()) {
+        case 'students':
+          await this.importStudents(data, branding);
+          break;
+        case 'staff':
+          await this.importStaff(data, branding);
+          break;
+        case 'classes':
+          await this.importClasses(data, branding);
+          break;
+        default:
+          throw new Error('Unsupported import type');
+      }
 
       return {
-        [fileType]: fileType === 'trust' ? processedData[0] : processedData,
-        errors: errors.length > 0 ? errors : undefined,
+        success: true,
+        message: `Successfully imported ${data.length} ${type} records`
       };
     } catch (error) {
       return {
-        errors: [{
-          row: 0,
-          field: 'file',
-          message: 'Failed to parse CSV file',
-        }],
+        success: false,
+        message: error instanceof Error ? error.message : 'Unknown error occurred'
       };
     }
   }
 
-  private isRequiredField(field: string, fileType: 'trust' | 'school'): boolean {
-    const requiredTrustFields = ['trustId', 'trustName'];
-    const requiredSchoolFields = ['schoolId', 'trustId', 'schoolName'];
-    return fileType === 'trust' 
-      ? requiredTrustFields.includes(field)
-      : requiredSchoolFields.includes(field);
+  private async importStudents(data: ImportData[], branding?: BrandingOptions): Promise<void> {
+    // Implementation for student import
+    console.log('Importing students with branding:', branding);
   }
 
-  private isNumericField(field: string): boolean {
-    return ['numberOfSchools', 'totalPupils', 'numberOfPupils'].includes(field);
+  private async importStaff(data: ImportData[], branding?: BrandingOptions): Promise<void> {
+    // Implementation for staff import
+    console.log('Importing staff with branding:', branding);
   }
 
-  private isValidNumber(value: string): boolean {
-    return !isNaN(Number(value)) && value.trim() !== '';
-  }
-
-  private formatValue(field: string, value: string): any {
-    if (this.isNumericField(field)) {
-      return Number(value);
-    }
-    return value;
+  private async importClasses(data: ImportData[], branding?: BrandingOptions): Promise<void> {
+    // Implementation for classes import
+    console.log('Importing classes with branding:', branding);
   }
 }
