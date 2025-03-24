@@ -20,3 +20,6 @@ export function getGreeting(): string {
   if (hour < 18) return 'Good afternoon';
   return 'Good evening';
 }
+
+// Re-export color utilities
+export * from './color';
