@@ -1,8 +1,8 @@
 import { Metadata } from "next"
 import { RolesProvider } from "@/lib/hooks/use-roles"
 import { Toaster } from "@/components/ui/toaster"
-import { Header } from "@/components/Header"
-import { Sidebar } from "@/components/Sidebar"
+import { header as Header } from "@/components/header"
+import { SideNav as Sidebar } from "@/components/side-nav"
 
 export const metadata: Metadata = {
   title: "Schoolgle - Dashboard",
