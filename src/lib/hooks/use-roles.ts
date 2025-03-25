@@ -1,3 +1,5 @@
+"use client"
+
 import { createContext, useContext, useState } from "react"
 
 type Role = "admin" | "teacher" | "staff" | "student" | "parent"
@@ -9,7 +11,14 @@ interface RolesContextType {
   removeRole: (role: Role) => void
 }
 
-const RolesContext = createContext<RolesContextType | undefined>(undefined)
+const defaultContext: RolesContextType = {
+  roles: [],
+  hasRole: () => false,
+  addRole: () => {},
+  removeRole: () => {},
+}
+
+export const RolesContext = createContext<RolesContextType>(defaultContext)
 
 export function RolesProvider({ children }: { children: React.ReactNode }) {
   const [roles, setRoles] = useState<Role[]>([])
@@ -27,7 +36,14 @@ export function RolesProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <RolesContext.Provider value={{ roles, hasRole, addRole, removeRole }}>
+    <RolesContext.Provider
+      value={{
+        roles,
+        hasRole,
+        addRole,
+        removeRole,
+      }}
+    >
       {children}
     </RolesContext.Provider>
   )
