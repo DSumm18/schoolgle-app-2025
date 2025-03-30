@@ -2,11 +2,19 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './pages/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './app/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
   ],
   theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
     extend: {
       colors: {
         border: "hsl(var(--border))",
@@ -64,16 +72,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    // Try to require tailwindcss-animate, but continue if it fails
-    function({ addBase, addComponents, addUtilities }) {
-      try {
-        return require("tailwindcss-animate");
-      } catch (error) {
-        console.warn("Warning: tailwindcss-animate not found, some animations may not work");
-        // Return a no-op plugin
-        return { handler: () => {} };
-      }
-    }
-  ],
-};
+  plugins: [require("tailwindcss-animate")],
+}

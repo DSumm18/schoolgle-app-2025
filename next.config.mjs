@@ -1,12 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  swcMinify: true,
-  experimental: {
-    optimizeCss: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
-  compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
-  },
-}
+};
 
-export default nextConfig
+export default nextConfig;
